@@ -1,0 +1,46 @@
+From f8f10f496bce396416d7156da876222c6ce8c341 Mon Sep 17 00:00:00 2001
+From: Steven Kipisz <skipisz@beagleboard.org>
+Date: Wed, 9 Jan 2009 12:01:11 -0600
+Subject: [PATCH-USB] Omap3 beagleboard: add support for EHCI in revision C1 boards
+
+Signed-off-by: Jason Kridner <jkridner@beagleboard.org>
+---
+ arch/arm/mach-omap2/board-omap3beagle.c |   10 +---------
+ arch/arm/mach-omap2/usb-ehci.c          |    4 +---
+ drivers/usb/host/ehci-omap.c            |   26 ++++++++++++++++++++++++++
+ 3 files changed, 28 insertions(+), 12 deletions(-)
+
+diff --git a/arch/arm/mach-omap2/board-omap3beagle.c b/arch/arm/mach-omap2/board-omap3beagle.c
+index fe97bab..de81153 100644
+--- a/arch/arm/mach-omap2/board-omap3beagle.c
++++ b/arch/arm/mach-omap2/board-omap3beagle.c
+@@ -140,15 +140,7 @@ static int beagle_twl_gpio_setup(struct device *dev,
+ 	 * power switch and overcurrent detect
+ 	 */
+ 
+-	gpio_request(gpio + 1, "EHCI_nOC");
+-	gpio_direction_input(gpio + 1);
+-
+-	/* TWL4030_GPIO_MAX + 0 == ledA, EHCI nEN_USB_PWR (out, active low) */
+-	gpio_request(gpio + TWL4030_GPIO_MAX, "nEN_USB_PWR");
+-	gpio_direction_output(gpio + TWL4030_GPIO_MAX, 1);
+-
+-	/* TWL4030_GPIO_MAX + 1 == ledB, PMU_STAT (out, active low LED) */
+-	gpio_leds[2].gpio = gpio + TWL4030_GPIO_MAX + 1;
++        /* TODO: This needs to be modified to not rely on u-boot */
+ 
+ 	return 0;
+ }
+--- /tmp/usb-ehci.c	2009-07-30 13:14:34.000000000 +0200
++++ git/arch/arm/mach-omap2/usb-ehci.c	2009-07-30 13:16:03.000000000 +0200
+@@ -170,9 +170,7 @@
+ 
+ 	platform_device_add_data(&ehci_device, &pdata, sizeof(pdata));
+ 
+-	/* Setup Pin IO MUX for EHCI */
+-	if (cpu_is_omap34xx())
+-		setup_ehci_io_mux();
++	/* TODO: Setup Pin IO MUX for EHCI - moved this temporarily to U-boot */
+ 
+ 	if (platform_device_register(&ehci_device) < 0) {
+ 		printk(KERN_ERR "Unable to register HS-USB (EHCI) device\n");

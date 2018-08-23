@@ -1,0 +1,211 @@
+t27-qbd-0005:~# ls -la /dev/
+drwxr-xr-x   12 root     root          4200 Aug  3 02:00 .
+drwxr-xr-x   17 root     root             0 Jan  1  1970 ..
+drwx------    3 root     root            60 Aug  2 10:26 .static
+drwxr-xr-x    4 root     root           100 Aug  3 09:22 .udev
+drwxr-xr-x    2 root     root            40 Aug  2 10:26 .udevdb
+crw-rw----    1 root     root      189,   1 Aug  2 10:26 1-1
+lrwxrwxrwx    1 root     root            13 Aug  2 10:26 MAKEDEV -> /sbin/MAKEDEV
+crw-rw----    1 root     root       10, 134 Aug  2 10:26 apm_bios
+crw-rw----    1 root     audio      14,   4 Aug  2 10:26 audio
+drwxr-xr-x    3 root     root            60 Aug  2 10:26 bus
+crw-------    1 root     root        5,   1 Aug  3 09:22 console
+lrwxrwxrwx    1 root     root            11 Aug  2 10:26 core -> /proc/kcore
+crw-rw----    1 root     root       10,  63 Aug  2 10:26 cpu_dma_latency
+crw-rw----    1 root     root      253,   0 Aug  2 10:26 dam
+crw-rw----    1 root     audio      14,   3 Aug  2 10:26 dsp
+crw-rw----    1 root     video      29,   0 Aug  2 10:26 fb0
+crw-rw----    1 root     video      29,   1 Aug  2 10:26 fb1
+lrwxrwxrwx    1 root     root            13 Aug  2 10:26 fd -> /proc/self/fd
+crw-rw-rw-    1 root     root        1,   7 Aug  2 10:26 full
+crw-rw----    1 root     root       89,   0 Aug  2 10:26 i2c-0
+crw-rw----    1 root     root       89,   1 Aug  2 10:26 i2c-1
+prw-------    1 root     root             0 Aug  2 10:27 initctl
+drwxr-xr-x    2 root     root            80 Aug  2 10:26 input
+crw-rw----    1 root     root        1,  11 Aug  2 10:26 kmsg
+srw-rw-rw-    1 root     root             0 Aug  2 10:27 log
+drwxr-xr-x    2 root     root            60 Aug  2 10:26 loop
+brw-rw----    1 root     disk        7,   0 Aug  2 10:26 loop0
+brw-rw----    1 root     disk        7,   1 Aug  2 10:26 loop1
+brw-rw----    1 root     disk        7,   2 Aug  2 10:26 loop2
+brw-rw----    1 root     disk        7,   3 Aug  2 10:26 loop3
+brw-rw----    1 root     disk        7,   4 Aug  2 10:26 loop4
+brw-rw----    1 root     disk        7,   5 Aug  2 10:26 loop5
+brw-rw----    1 root     disk        7,   6 Aug  2 10:26 loop6
+brw-rw----    1 root     disk        7,   7 Aug  2 10:26 loop7
+crw-r-----    1 root     kmem        1,   1 Aug  2 10:26 mem
+crw-rw----    1 root     audio      14,   0 Aug  2 10:26 mixer
+crw-rw----    1 root     root       90,   0 Aug  2 10:26 mtd0
+crw-rw----    1 root     root       90,   1 Aug  2 10:26 mtd0ro
+crw-rw----    1 root     root       90,   2 Aug  2 10:26 mtd1
+crw-rw----    1 root     root       90,   3 Aug  2 10:26 mtd1ro
+crw-rw----    1 root     root       90,   4 Aug  2 10:26 mtd2
+crw-rw----    1 root     root       90,   5 Aug  2 10:26 mtd2ro
+crw-rw----    1 root     root       90,   6 Aug  2 10:26 mtd3
+crw-rw----    1 root     root       90,   7 Aug  2 10:26 mtd3ro
+crw-rw----    1 root     root       90,   8 Aug  2 10:26 mtd4
+crw-rw----    1 root     root       90,   9 Aug  2 10:26 mtd4ro
+crw-rw----    1 root     root       90,  10 Aug  2 10:26 mtd5
+crw-rw----    1 root     root       90,  11 Aug  2 10:26 mtd5ro
+crw-rw----    1 root     root       90,  12 Aug  2 10:26 mtd6
+crw-rw----    1 root     root       90,  13 Aug  2 10:26 mtd6ro
+brw-rw----    1 root     disk       31,   0 Aug  2 10:26 mtdblock0
+brw-rw----    1 root     disk       31,   1 Aug  2 10:26 mtdblock1
+brw-rw----    1 root     disk       31,   2 Aug  2 10:26 mtdblock2
+brw-rw----    1 root     disk       31,   3 Aug  2 10:26 mtdblock3
+brw-rw----    1 root     disk       31,   4 Aug  2 10:26 mtdblock4
+brw-rw----    1 root     disk       31,   5 Aug  2 10:26 mtdblock5
+brw-rw----    1 root     disk       31,   6 Aug  2 10:26 mtdblock6
+crw-rw----    1 root     root      252,   0 Aug  2 10:26 mxc_vpu
+drwxr-xr-x    2 root     root            60 Aug  2 10:26 net
+crw-rw----    1 root     root       10,  62 Aug  2 10:26 network_latency
+crw-rw----    1 root     root       10,  61 Aug  2 10:26 network_throughput
+crw-rw-rw-    1 root     root        1,   3 Aug  2 10:26 null
+crw-------    1 root     root      108,   0 Aug  2 10:26 ppp
+crw-rw-rw-    1 root     root        5,   2 Aug  3 12:17 ptmx
+drwxr-xr-x    2 root     root             0 Jan  1  1970 pts
+crw-rw-rw-    1 root     tty         2,   0 Aug  2 10:26 ptyp0
+crw-rw-rw-    1 root     tty         2,   1 Aug  2 10:26 ptyp1
+crw-rw-rw-    1 root     tty         2,   2 Aug  2 10:26 ptyp2
+crw-rw-rw-    1 root     tty         2,   3 Aug  2 10:26 ptyp3
+crw-rw-rw-    1 root     tty         2,   4 Aug  2 10:26 ptyp4
+crw-rw-rw-    1 root     tty         2,   5 Aug  2 10:26 ptyp5
+crw-rw-rw-    1 root     tty         2,   6 Aug  2 10:26 ptyp6
+crw-rw-rw-    1 root     tty         2,   7 Aug  2 10:26 ptyp7
+crw-rw-rw-    1 root     tty         2,   8 Aug  2 10:26 ptyp8
+crw-rw-rw-    1 root     tty         2,   9 Aug  2 10:26 ptyp9
+crw-rw-rw-    1 root     tty         2,  10 Aug  2 10:26 ptypa
+crw-rw-rw-    1 root     tty         2,  11 Aug  2 10:26 ptypb
+crw-rw-rw-    1 root     tty         2,  12 Aug  2 10:26 ptypc
+crw-rw-rw-    1 root     tty         2,  13 Aug  2 10:26 ptypd
+crw-rw-rw-    1 root     tty         2,  14 Aug  2 10:26 ptype
+crw-rw-rw-    1 root     tty         2,  15 Aug  2 10:26 ptypf
+brw-rw----    1 root     disk        1,   0 Aug  2 10:26 ram0
+brw-rw----    1 root     disk        1,   1 Aug  2 10:26 ram1
+brw-rw----    1 root     disk        1,  10 Aug  2 10:26 ram10
+brw-rw----    1 root     disk        1,  11 Aug  2 10:26 ram11
+brw-rw----    1 root     disk        1,  12 Aug  2 10:26 ram12
+brw-rw----    1 root     disk        1,  13 Aug  2 10:26 ram13
+brw-rw----    1 root     disk        1,  14 Aug  2 10:26 ram14
+brw-rw----    1 root     disk        1,  15 Aug  2 10:26 ram15
+brw-rw----    1 root     disk        1,   2 Aug  2 10:26 ram2
+brw-rw----    1 root     disk        1,   3 Aug  2 10:26 ram3
+brw-rw----    1 root     disk        1,   4 Aug  2 10:26 ram4
+brw-rw----    1 root     disk        1,   5 Aug  2 10:26 ram5
+brw-rw----    1 root     disk        1,   6 Aug  2 10:26 ram6
+brw-rw----    1 root     disk        1,   7 Aug  2 10:26 ram7
+brw-rw----    1 root     disk        1,   8 Aug  2 10:26 ram8
+brw-rw----    1 root     disk        1,   9 Aug  2 10:26 ram9
+crw-rw-rw-    1 root     root        1,   8 Aug  2 10:26 random
+lrwxrwxrwx    1 root     root             4 Aug  2 10:26 rtc -> rtc0
+crw-rw----    1 root     root      254,   0 Aug  2 10:26 rtc0
+crw-rw----    1 root     root      254,   1 Aug  2 10:26 rtc1
+drwxr-xr-x    2 root     root            40 Aug  2 10:26 shm
+drwxr-xr-x    2 root     root           120 Aug  2 10:26 snd
+lrwxrwxrwx    1 root     root            24 Aug  2 10:26 sndstat -> /proc/asound/oss/sndstat
+lrwxrwxrwx    1 root     root            15 Aug  2 10:26 stderr -> /proc/self/fd/2
+lrwxrwxrwx    1 root     root            15 Aug  2 10:26 stdin -> /proc/self/fd/0
+lrwxrwxrwx    1 root     root            15 Aug  2 10:26 stdout -> /proc/self/fd/1
+crw-rw-rw-    1 root     root        5,   0 Aug  2 10:34 tty
+crw-rw----    1 root     root        4,   0 Aug  3 02:00 tty0
+crw-rw----    1 root     root        4,   1 Aug  3 02:00 tty1
+crw-rw----    1 root     root        4,  10 Aug  2 10:26 tty10
+crw-rw----    1 root     root        4,  11 Aug  2 10:26 tty11
+crw-rw----    1 root     root        4,  12 Aug  2 10:26 tty12
+crw-rw----    1 root     root        4,  13 Aug  2 10:26 tty13
+crw-rw----    1 root     root        4,  14 Aug  2 10:26 tty14
+crw-rw----    1 root     root        4,  15 Aug  2 10:26 tty15
+crw-rw----    1 root     root        4,  16 Aug  2 10:26 tty16
+crw-rw----    1 root     root        4,  17 Aug  2 10:26 tty17
+crw-rw----    1 root     root        4,  18 Aug  2 10:26 tty18
+crw-rw----    1 root     root        4,  19 Aug  2 10:26 tty19
+crw-rw----    1 root     root        4,   2 Aug  2 10:27 tty2
+crw-rw----    1 root     root        4,  20 Aug  2 10:26 tty20
+crw-rw----    1 root     root        4,  21 Aug  2 10:26 tty21
+crw-rw----    1 root     root        4,  22 Aug  2 10:26 tty22
+crw-rw----    1 root     root        4,  23 Aug  2 10:26 tty23
+crw-rw----    1 root     root        4,  24 Aug  2 10:26 tty24
+crw-rw----    1 root     root        4,  25 Aug  2 10:26 tty25
+crw-rw----    1 root     root        4,  26 Aug  2 10:26 tty26
+crw-rw----    1 root     root        4,  27 Aug  2 10:26 tty27
+crw-rw----    1 root     root        4,  28 Aug  2 10:26 tty28
+crw-rw----    1 root     root        4,  29 Aug  2 10:26 tty29
+crw-rw----    1 root     root        4,   3 Aug  2 10:26 tty3
+crw-rw----    1 root     root        4,  30 Aug  2 10:26 tty30
+crw-rw----    1 root     root        4,  31 Aug  2 10:26 tty31
+crw-rw----    1 root     root        4,  32 Aug  2 10:26 tty32
+crw-rw----    1 root     root        4,  33 Aug  2 10:26 tty33
+crw-rw----    1 root     root        4,  34 Aug  2 10:26 tty34
+crw-rw----    1 root     root        4,  35 Aug  2 10:26 tty35
+crw-rw----    1 root     root        4,  36 Aug  2 10:26 tty36
+crw-rw----    1 root     root        4,  37 Aug  2 10:26 tty37
+crw-rw----    1 root     root        4,  38 Aug  2 10:26 tty38
+crw-rw----    1 root     root        4,  39 Aug  2 10:26 tty39
+crw-rw----    1 root     root        4,   4 Aug  2 10:26 tty4
+crw-rw----    1 root     root        4,  40 Aug  2 10:26 tty40
+crw-rw----    1 root     root        4,  41 Aug  2 10:26 tty41
+crw-rw----    1 root     root        4,  42 Aug  2 10:26 tty42
+crw-rw----    1 root     root        4,  43 Aug  2 10:26 tty43
+crw-rw----    1 root     root        4,  44 Aug  2 10:26 tty44
+crw-rw----    1 root     root        4,  45 Aug  2 10:26 tty45
+crw-rw----    1 root     root        4,  46 Aug  2 10:26 tty46
+crw-rw----    1 root     root        4,  47 Aug  2 10:26 tty47
+crw-rw----    1 root     root        4,  48 Aug  2 10:26 tty48
+crw-rw----    1 root     root        4,  49 Aug  2 10:26 tty49
+crw-rw----    1 root     root        4,   5 Aug  2 10:26 tty5
+crw-rw----    1 root     root        4,  50 Aug  2 10:26 tty50
+crw-rw----    1 root     root        4,  51 Aug  2 10:26 tty51
+crw-rw----    1 root     root        4,  52 Aug  2 10:26 tty52
+crw-rw----    1 root     root        4,  53 Aug  2 10:26 tty53
+crw-rw----    1 root     root        4,  54 Aug  2 10:26 tty54
+crw-rw----    1 root     root        4,  55 Aug  2 10:26 tty55
+crw-rw----    1 root     root        4,  56 Aug  2 10:26 tty56
+crw-rw----    1 root     root        4,  57 Aug  2 10:26 tty57
+crw-rw----    1 root     root        4,  58 Aug  2 10:26 tty58
+crw-rw----    1 root     root        4,  59 Aug  2 10:26 tty59
+crw-rw----    1 root     root        4,   6 Aug  2 10:26 tty6
+crw-rw----    1 root     root        4,  60 Aug  2 10:26 tty60
+crw-rw----    1 root     root        4,  61 Aug  2 10:26 tty61
+crw-rw----    1 root     root        4,  62 Aug  2 10:26 tty62
+crw-rw----    1 root     root        4,  63 Aug  2 10:26 tty63
+crw-rw----    1 root     root        4,   7 Aug  2 10:26 tty7
+crw-rw----    1 root     root        4,   8 Aug  2 10:26 tty8
+crw-rw----    1 root     root        4,   9 Aug  2 10:26 tty9
+crw-------    1 root     root      207,  16 Aug  3 12:13 ttymxc0
+crw-rw----    1 root     dialout   207,  17 Aug  3 12:17 ttymxc1
+crw-rw----    1 root     dialout   207,  18 Aug  2 16:29 ttymxc2
+crw-rw-rw-    1 root     tty         3,   0 Aug  2 10:26 ttyp0
+crw-rw-rw-    1 root     tty         3,   1 Aug  2 10:26 ttyp1
+crw-rw-rw-    1 root     tty         3,   2 Aug  2 10:26 ttyp2
+crw-rw-rw-    1 root     tty         3,   3 Aug  2 10:26 ttyp3
+crw-rw-rw-    1 root     tty         3,   4 Aug  2 10:26 ttyp4
+crw-rw-rw-    1 root     tty         3,   5 Aug  2 10:26 ttyp5
+crw-rw-rw-    1 root     tty         3,   6 Aug  2 10:26 ttyp6
+crw-rw-rw-    1 root     tty         3,   7 Aug  2 10:26 ttyp7
+crw-rw-rw-    1 root     tty         3,   8 Aug  2 10:26 ttyp8
+crw-rw-rw-    1 root     tty         3,   9 Aug  2 10:26 ttyp9
+crw-rw-rw-    1 root     tty         3,  10 Aug  2 10:26 ttypa
+crw-rw-rw-    1 root     tty         3,  11 Aug  2 10:26 ttypb
+crw-rw-rw-    1 root     tty         3,  12 Aug  2 10:26 ttypc
+crw-rw-rw-    1 root     tty         3,  13 Aug  2 10:26 ttypd
+crw-rw-rw-    1 root     tty         3,  14 Aug  2 10:26 ttype
+crw-rw-rw-    1 root     tty         3,  15 Aug  2 10:26 ttypf
+crw-------    1 root     root       10, 200 Aug  2 10:26 tun
+crw-rw-rw-    1 root     root        1,   9 Aug  2 10:26 urandom
+crw-rw----    1 root     root      189,   0 Aug  2 10:26 usb1
+crw-rw-r--    1 root     root      189,   0 Aug  2 10:26 usbdev1.1
+crw-rw----    1 root     root      251,   1 Aug  2 10:26 usbdev1.1_ep00
+crw-rw----    1 root     root      251,   0 Aug  2 10:26 usbdev1.1_ep81
+crw-rw-r--    1 root     root      189,   1 Aug  2 10:26 usbdev1.2
+crw-rw----    1 root     root      251,   6 Aug  2 10:26 usbdev1.2_ep00
+crw-rw----    1 root     root      251,   3 Aug  2 10:26 usbdev1.2_ep04
+crw-rw----    1 root     root      251,   4 Aug  2 10:26 usbdev1.2_ep06
+crw-rw----    1 root     root      251,   5 Aug  2 10:26 usbdev1.2_ep0d
+crw-rw----    1 root     root      251,   2 Aug  2 10:26 usbdev1.2_ep83
+crw-rw----    1 root     root        7,   0 Aug  2 10:26 vcs
+crw-rw----    1 root     root        7,   1 Aug  3 02:00 vcs1
+crw-rw----    1 root     root        7,   2 Aug  3 02:00 vcs2
+crw-rw----    1 root     root        7, 128 Aug  2 10:26 vcsa
+crw-rw----    1 root     root        7, 129 Aug  3 02:00 vcsa1
+crw-rw----    1 root     root        7, 130 Aug  3 02:00 vcsa2
+crw-rw-rw-    1 root     root        1,   5 Aug  2 10:26 zero

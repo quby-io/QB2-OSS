@@ -1,0 +1,18 @@
+--- linux_r11/drivers/video/mx2fb.c	2011-04-19 10:54:11.000000000 +0200
++++ linux_r11/drivers/video/mx2fb.c	2011-04-28 11:51:45.000000000 +0200
+@@ -1354,15 +1354,6 @@
+ 	}
+ 	_request_irq();
+ 
+-#if defined(CONFIG_LOGO)
+-	// show logo on fb0: the bg fb
+-	if (fb_prepare_logo(&mx2fb_fb_info[0], FB_ROTATE_UR)) {
+-		/* Start display and show logo on boot */
+-		fb_set_cmap(&mx2fb_fb_info[0].cmap, &mx2fb_fb_info[0]);
+-		fb_show_logo(&mx2fb_fb_info[0], FB_ROTATE_UR);
+-	}
+-#endif
+-
+ #ifdef PWMR_BACKLIGHT_AVAILABLE
+ 	_init_backlight((struct mx2fb_info*)(&mx2fb_info), pdev);
+ #endif

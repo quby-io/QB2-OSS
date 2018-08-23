@@ -1,0 +1,83 @@
+#!/bin/sh
+# boot from the hard disk partition "$1" (which
+# must be given) using options from the rest of
+# the command line.
+
+# Use the standard init path (see /etc/init.d/rcS)
+export PATH=/sbin:/bin:/usr/sbin:/usr/bin
+
+# Mount required fileystems if necessary
+[ -e /proc/cpuinfo ] || mount -t proc  proc  /proc
+[ -e /sys/class    ] || mount -t sysfs sysfs /sys
+
+# Load the helper functions
+. /etc/default/functions
+. /etc/default/modulefunctions
+
+leds boot system
+
+if test -n "$1"
+then
+	device="$1"
+	shift
+        # load USB & SCSI storage modules (/proc required!)
+        echo "boot: loading modules required for disk boot"
+        loaddiskmods
+	# waiting for disk
+	if test "$sleep" -gt 0
+	then
+		echo "boot: waiting $sleep seconds for disk"
+		sleep "$sleep"
+	fi
+	# Attempt to assemble the RAID if necessary
+	if (echo $device | grep -q "^/dev/md")
+	then
+		if test -n "$MDUUID"
+		then
+			echo "boot: assembling RAID array (UUID)"
+			mdadm -Acpartitions --auto=md --uuid="$MDUUID" $device
+		else
+			echo "boot: assembling RAID array (config file)"
+			mdadm -As --auto=md $device
+		fi
+	fi
+
+	# fire the boot
+	echo "boot: rootfs: mount $* $device [$UUID]"
+
+	# Mount read-write because before exec'ing init
+	# If a UUID is given (in the environment) this
+	# is used in preference to the device, but if
+	# the UUID mount fails a standard device mount
+	# is attempted.
+	if	test -n "$UUID" &&
+		mount "$@" UUID="$UUID" /mnt ||
+		mount "$@" "$device" /mnt
+	then
+		# checkmount checks for sh, chroot, init, /dev
+		# and /mnt (i.e. /mnt/mnt in this case).
+		# minimaldevnodes checks (and creates if required)
+		# a few mandatory /dev nodes we may need.
+		if checkmount /mnt && minimaldevnodes /mnt
+		then
+			# pivot to /initrd if available, else /mnt
+			cd /
+			if test -d /mnt/initrd
+			then
+				swivel mnt initrd
+			else
+				swivel mnt mnt
+			fi
+			# swivel failed
+		fi
+		# Failure: unmount the partition
+		umount /mnt
+		# Remount /proc and /sys if necessary
+		[ -e /proc/cpuinfo ] || mount -t proc  proc  /proc
+		[ -e /sys/class    ] || mount -t sysfs sysfs /sys
+	fi
+fi
+
+# fallback - use the flash boot
+leds beep -f 1000 -r 2
+exec /boot/flash

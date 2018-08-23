@@ -1,0 +1,108 @@
+ecr2:/mnt/rootfs# ls -lad dev/*
+crw-rw----    1 root     video      10, 175 Dec 23 13:46 dev/agpgart
+crw-rw----    1 root     audio      14,   4 Dec 23 13:46 dev/audio
+crw-rw----    1 root     audio      14,  20 Dec 23 13:46 dev/audio1
+crw-rw----    1 root     audio      14,  36 Dec 23 13:46 dev/audio2
+crw-rw----    1 root     audio      14,  52 Dec 23 13:46 dev/audio3
+crw-rw----    1 root     audio      14,   7 Dec 23 13:46 dev/audioctl
+crw-------    1 root     tty         5,   1 Jan  1  1970 dev/console
+lrwxrwxrwx    1 root     root            11 Dec 24 13:02 dev/core -> /proc/kcore
+crw-rw----    1 root     audio      14,   3 Dec 23 13:46 dev/dsp
+crw-rw----    1 root     audio      14,  19 Dec 23 13:46 dev/dsp1
+crw-rw----    1 root     audio      14,  35 Dec 23 13:46 dev/dsp2
+crw-rw----    1 root     audio      14,  51 Dec 23 13:46 dev/dsp3
+crw-rw----    1 root     video      29,   0 Dec 23 13:46 dev/fb0
+crw-rw----    1 root     video      29,   1 Dec 23 13:46 dev/fb1
+crw-rw----    1 root     video      29,   2 Dec 23 13:46 dev/fb2
+crw-rw----    1 root     video      29,   3 Dec 23 13:46 dev/fb3
+crw-rw----    1 root     video      29,   4 Dec 23 13:46 dev/fb4
+crw-rw----    1 root     video      29,   5 Dec 23 13:46 dev/fb5
+crw-rw----    1 root     video      29,   6 Dec 23 13:46 dev/fb6
+crw-rw----    1 root     video      29,   7 Dec 23 13:46 dev/fb7
+lrwxrwxrwx    1 root     root            13 Dec 24 13:02 dev/fd -> /proc/self/fd
+crw-rw-rw-    1 root     root        1,   7 Dec 23 13:45 dev/full
+prw-------    1 root     root             0 Dec 23 13:49 dev/initctl
+drwxr-xr-x    2 root     root           544 Dec 23 13:39 dev/input
+crw-r-----    1 root     kmem        1,   2 Dec 23 13:45 dev/kmem
+brw-rw----    1 root     disk        7,   0 Dec 23 13:45 dev/loop0
+brw-rw----    1 root     disk        7,   1 Dec 23 13:45 dev/loop1
+brw-rw----    1 root     disk        7,   2 Dec 23 13:45 dev/loop2
+brw-rw----    1 root     disk        7,   3 Dec 23 13:45 dev/loop3
+brw-rw----    1 root     disk        7,   4 Dec 23 13:45 dev/loop4
+brw-rw----    1 root     disk        7,   5 Dec 23 13:45 dev/loop5
+brw-rw----    1 root     disk        7,   6 Dec 23 13:45 dev/loop6
+brw-rw----    1 root     disk        7,   7 Dec 23 13:45 dev/loop7
+crw-r-----    1 root     kmem        1,   1 Dec 23 13:45 dev/mem
+crw-rw----    1 root     audio      35,   0 Dec 23 13:46 dev/midi0
+crw-rw----    1 root     audio      14,   2 Dec 23 13:46 dev/midi00
+crw-rw----    1 root     audio      14,  18 Dec 23 13:46 dev/midi01
+crw-rw----    1 root     audio      14,  34 Dec 23 13:46 dev/midi02
+crw-rw----    1 root     audio      14,  50 Dec 23 13:46 dev/midi03
+crw-rw----    1 root     audio      35,   1 Dec 23 13:46 dev/midi1
+crw-rw----    1 root     audio      35,   2 Dec 23 13:46 dev/midi2
+crw-rw----    1 root     audio      35,   3 Dec 23 13:46 dev/midi3
+crw-rw----    1 root     audio      14,   0 Dec 23 13:46 dev/mixer
+crw-rw----    1 root     audio      14,  16 Dec 23 13:46 dev/mixer1
+crw-rw----    1 root     audio      14,  32 Dec 23 13:46 dev/mixer2
+crw-rw----    1 root     audio      14,  48 Dec 23 13:46 dev/mixer3
+crw-rw----    1 root     audio      31,   0 Dec 23 13:46 dev/mpu401data
+crw-rw----    1 root     audio      31,   1 Dec 23 13:46 dev/mpu401stat
+crw-r--r--    1 root     root       90,   0 Dec 23 13:39 dev/mtd0
+crw-r--r--    1 root     root       90,   2 Dec 23 13:39 dev/mtd1
+crw-r--r--    1 root     root       90,   4 Dec 23 13:39 dev/mtd2
+crw-r--r--    1 root     root       90,   6 Dec 23 13:39 dev/mtd3
+crw-r--r--    1 root     root       90,   8 Dec 23 13:39 dev/mtd4
+crw-r--r--    1 root     root       90,  10 Dec 23 13:39 dev/mtd5
+crw-rw-rw-    1 root     root        1,   3 Dec 23 13:45 dev/null
+crw-r-----    1 root     kmem        1,   4 Dec 23 13:45 dev/port
+crw-rw-rw-    1 root     root        5,   2 Dec 23 13:52 dev/ptmx
+drwxr-xr-x    2 root     root           160 Dec 23 13:48 dev/pts
+lrwxrwxrwx    1 root     root             4 Dec 24 13:02 dev/ram -> ram1
+brw-rw----    1 root     disk        1,   0 Dec 23 13:45 dev/ram0
+brw-rw----    1 root     disk        1,   1 Dec 23 13:45 dev/ram1
+brw-rw----    1 root     disk        1,  10 Dec 23 13:45 dev/ram10
+brw-rw----    1 root     disk        1,  11 Dec 23 13:45 dev/ram11
+brw-rw----    1 root     disk        1,  12 Dec 23 13:45 dev/ram12
+brw-rw----    1 root     disk        1,  13 Dec 23 13:45 dev/ram13
+brw-rw----    1 root     disk        1,  14 Dec 23 13:45 dev/ram14
+brw-rw----    1 root     disk        1,  15 Dec 23 13:45 dev/ram15
+brw-rw----    1 root     disk        1,  16 Dec 23 13:45 dev/ram16
+brw-rw----    1 root     disk        1,   2 Dec 23 13:45 dev/ram2
+brw-rw----    1 root     disk        1,   3 Dec 23 13:45 dev/ram3
+brw-rw----    1 root     disk        1,   4 Dec 23 13:45 dev/ram4
+brw-rw----    1 root     disk        1,   5 Dec 23 13:45 dev/ram5
+brw-rw----    1 root     disk        1,   6 Dec 23 13:45 dev/ram6
+brw-rw----    1 root     disk        1,   7 Dec 23 13:45 dev/ram7
+brw-rw----    1 root     disk        1,   8 Dec 23 13:45 dev/ram8
+brw-rw----    1 root     disk        1,   9 Dec 23 13:45 dev/ram9
+crw-rw-rw-    1 root     root        1,   8 Dec 23 13:45 dev/random
+crw-rw----    1 root     audio      35,  64 Dec 23 13:46 dev/rmidi0
+crw-rw----    1 root     audio      35,  65 Dec 23 13:46 dev/rmidi1
+crw-rw----    1 root     audio      35,  66 Dec 23 13:46 dev/rmidi2
+crw-rw----    1 root     audio      35,  67 Dec 23 13:46 dev/rmidi3
+crw-rw----    1 root     audio      14,   1 Dec 23 13:46 dev/sequencer
+drwxr-xr-x    2 root     root           160 Dec 23 13:48 dev/shm
+crw-rw----    1 root     audio      35, 128 Dec 23 13:46 dev/smpte0
+crw-rw----    1 root     audio      35, 129 Dec 23 13:46 dev/smpte1
+crw-rw----    1 root     audio      35, 130 Dec 23 13:46 dev/smpte2
+crw-rw----    1 root     audio      35, 131 Dec 23 13:46 dev/smpte3
+crw-rw----    1 root     audio      14,   6 Dec 23 13:46 dev/sndstat
+lrwxrwxrwx    1 root     root             4 Dec 24 13:02 dev/stderr -> fd/2
+lrwxrwxrwx    1 root     root             4 Dec 24 13:02 dev/stdin -> fd/0
+lrwxrwxrwx    1 root     root             4 Dec 24 13:02 dev/stdout -> fd/1
+crw-rw-rw-    1 root     tty         5,   0 Dec 23 13:45 dev/tty
+crw-------    1 root     tty         4,   0 Dec 23 13:45 dev/tty0
+crw-------    1 root     tty         4,   1 Dec 23 13:45 dev/tty1
+crw-------    1 root     tty         4,   2 Dec 23 13:45 dev/tty2
+crw-------    1 root     tty         4,   3 Dec 23 13:45 dev/tty3
+crw-------    1 root     tty         4,   4 Dec 23 13:45 dev/tty4
+crw-------    1 root     tty         4,   5 Dec 23 13:45 dev/tty5
+crw-------    1 root     tty         4,   6 Dec 23 13:45 dev/tty6
+crw-------    1 root     tty         4,   7 Dec 23 13:45 dev/tty7
+crw-------    1 root     tty         4,   8 Dec 23 13:45 dev/tty8
+crw-------    1 root     tty         4,   9 Dec 23 13:45 dev/tty9
+crw-r--r--    1 root     root      253,   0 Dec 23 13:39 dev/ubi0
+crw-r--r--    1 root     root       10,  63 Dec 23 13:39 dev/ubi_ctrl
+crw-rw-rw-    1 root     root        1,   9 Dec 23 13:45 dev/urandom
+crw-rw-rw-    1 root     root        1,   5 Dec 23 13:45 dev/zero
+ecr2:/mnt/rootfs#

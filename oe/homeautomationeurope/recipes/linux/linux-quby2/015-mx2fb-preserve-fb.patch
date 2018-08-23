@@ -1,0 +1,22 @@
+--- linux_r04/drivers/video/mx2fb.c	2012-01-27 14:43:58.000000000 +0100
++++ linux_r04/drivers/video/mx2fb.c	2012-01-27 16:34:04.000000000 +0100
+@@ -1032,6 +1032,19 @@
+ 	struct fb_var_screeninfo *var = &info->var;
+ 	struct mx2fb_fb_info *mx2fbi = (struct mx2fb_fb_info *)info->par;
+ 
++	static int times = 0; // skip 1st 3 calls to this function:
++	//Console: switching to colour frame buffer device 100x30
++	//imx-fb imx-fb.0: fb0: DISP0 BG fb device registered successfully.
++	//imx-fb imx-fb.0: fb1: DISP0 FG fb device registered successfully.
++	if (++times <= 3)
++	{
++		dev_err(info->device, "PreserveUBootFramebuffer(%d): xres=%d, yres=%d [skip _update_lcdc]\n", times, info->var.xres, info->var.yres);
++		_enable_lcdc(info);
++		return;
++	}
++	else if (times == 4)
++		dev_err(info->device, "PreserveUBootFramebuffer(%d): xres=%d, yres=%d [do _update_lcdc]\n", times, info->var.xres, info->var.yres);
++
+ 	if (mx2fbi->type == MX2FB_TYPE_GW) {
+ 		_enable_graphic_window(info);
+ 		return;

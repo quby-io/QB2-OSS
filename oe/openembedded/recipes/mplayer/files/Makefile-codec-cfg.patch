@@ -1,0 +1,11 @@
+--- /tmp/Makefile	2008-09-24 19:24:26.000000000 +0200
++++ trunk/Makefile	2008-09-24 19:25:01.683198000 +0200
+@@ -752,7 +752,7 @@
+ 	$(CC) -o $@ $^ $(LDFLAGS_MPLAYER)
+ 
+ codec-cfg$(EXESUF): codec-cfg.c codec-cfg.h help_mp.h
+-	$(HOST_CC) -O -DCODECS2HTML $(EXTRA_INC) -o $@ $<
++	$(BUILD_CC) -O -DCODECS2HTML $(EXTRA_INC) -o $@ $<
+ 
+ codecs.conf.h: codec-cfg$(EXESUF) etc/codecs.conf
+ 	./$^ > $@

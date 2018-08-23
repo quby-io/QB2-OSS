@@ -1,0 +1,37 @@
+--- linux_r07/drivers/watchdog/imx2_wdt.c.orig	2011-06-24 18:02:44.000000000 +0200
++++ linux_r07/drivers/watchdog/imx2_wdt.c	2012-04-17 15:09:48.000000000 +0200
+@@ -46,6 +46,9 @@
+ #define IMX2_WDT_SEQ1		0x5555		/* -> service sequence 1 */
+ #define IMX2_WDT_SEQ2		0xAAAA		/* -> service sequence 2 */
+ 
++#define IMX2_WDT_WRSR          0x04		/* Reset Status Register */
++#define IMX2_WDT_WRSR_TOUT     (1 << 1)	/* -> Reset due to Timeout */ 
++
+ #define IMX2_WDT_MAX_TIME	128
+ #define IMX2_WDT_DEFAULT_TIME	60		/* in seconds */
+ 
+@@ -175,6 +178,7 @@
+ 	void __user *argp = (void __user *)arg;
+ 	int __user *p = argp;
+ 	int new_value;
++	u16 val;
+ 
+ 	switch (cmd) {
+ 	case WDIOC_GETSUPPORT:
+@@ -182,9 +186,15 @@
+ 			sizeof(struct watchdog_info)) ? -EFAULT : 0;
+ 
+ 	case WDIOC_GETSTATUS:
+-	case WDIOC_GETBOOTSTATUS:
+ 		return put_user(0, p);
+ 
++	case WDIOC_GETBOOTSTATUS:
++		val = __raw_readw(imx2_wdt.base + IMX2_WDT_WRSR);
++		new_value = 0;
++		if (val & IMX2_WDT_WRSR_TOUT)
++			new_value = WDIOF_CARDRESET;
++		return put_user(new_value, p);
++
+ 	case WDIOC_KEEPALIVE:
+ 		imx2_wdt_ping();
+ 		return 0;

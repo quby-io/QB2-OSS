@@ -1,0 +1,54 @@
+Index: speech-dispatcher-0.6.6/configure.in
+===================================================================
+--- speech-dispatcher-0.6.6.orig/configure.in	2008-07-20 13:10:44.208894676 +0200
++++ speech-dispatcher-0.6.6/configure.in	2008-07-20 13:11:16.946093820 +0200
+@@ -5,6 +5,7 @@
+ 
+ dnl progs
+ AC_PROG_CC
++AC_PROG_CXX
+ 
+ dnl info
+ AM_INIT_AUTOMAKE("speech-dispatcher", "`cat version.sh|grep '^VERSION'|awk -F= '{print $2}'`")
+@@ -134,12 +135,15 @@
+ AC_SUBST(ibmtts_include)
+ 
+ dnl check for espeak support
++AC_LANG_PUSH([C++])
+ AC_CHECK_LIB(espeak,
+ espeak_Initialize,
+ 		espeak_ok="true"; echo "Compiling with espeak support.",
+ 		espeak_ok="false"; echo "Espeak not found.",
+          	-lpthread -lm)
+ 
++AC_LANG_POP([C++])
++
+ AC_ARG_WITH(espeak, AS_HELP_STRING(--with-espeak, Compile with espeak support),
+ 		 if test $withval = "no"; then 
+ 		    echo "Forced compilation without espeak support."; 
+Index: speech-dispatcher-0.6.6/src/modules/Makefile.am
+===================================================================
+--- speech-dispatcher-0.6.6.orig/src/modules/Makefile.am	2008-07-20 13:10:51.768895801 +0200
++++ speech-dispatcher-0.6.6/src/modules/Makefile.am	2008-07-20 13:10:57.665559805 +0200
+@@ -8,6 +8,7 @@
+ EXTRA_DIST = module_main.c module_utils_addvoice.c festival_client.c festival_client.h
+ 
+ AM_CFLAGS = -Wall -DLOCALEDIR=\"$(localedir)\" $(inc_local) @glib_include@ -L$(top_srcdir)/src/audio -I$(top_srcdir)/src/audio -I../../intl/ $(ibmtts_include) @SNDFILE_CFLAGS@ -Wl,--rpath -Wl,$(spdlibdir)
++AM_CXXFLAGS = -Wall -DLOCALEDIR=\"$(localedir)\" $(inc_local) @glib_include@ -L$(top_srcdir)/src/audio -I$(top_srcdir)/src/audio -I../../intl/ $(ibmtts_include) @SNDFILE_CFLAGS@ -Wl,--rpath -Wl,$(spdlibdir)
+ 
+ if flite_support
+ if ibmtts_support
+@@ -45,6 +46,6 @@
+ sd_cicero_SOURCES = cicero.c module_utils.c module_utils.h
+ sd_cicero_LDADD = -lpthread -ldotconf @glib_libs@ @gthread_libs@
+ 
+-sd_espeak_SOURCES = espeak.c module_utils.c module_utils.h
++sd_espeak_SOURCES = espeak.c module_utils.c module_utils.h dummy.cpp
+ sd_espeak_LDFLAGS = -rpath '$(spdlibdir)'
+ sd_espeak_LDADD = -lsdaudio -lespeak -lpthread -ldotconf @glib_libs@ @SNDFILE_LIBS@ @gthread_libs@
+Index: speech-dispatcher-0.6.6/src/modules/dummy.cpp
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ speech-dispatcher-0.6.6/src/modules/dummy.cpp	2008-07-20 13:10:57.668895216 +0200
+@@ -0,0 +1 @@
++

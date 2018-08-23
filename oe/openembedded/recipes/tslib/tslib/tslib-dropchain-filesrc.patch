@@ -1,0 +1,445 @@
+diff -uNr old/configure.ac new/configure.ac
+--- old/configure.ac	2012-01-04 17:19:05.000000000 +0100
++++ new/configure.ac	2012-01-04 17:20:39.000000000 +0100
+@@ -97,6 +97,14 @@
+ AC_MSG_RESULT($pthres_module)
+ AM_CONDITIONAL(ENABLE_PTHRES_MODULE, test "$pthres_module" = "yes")
+ 
++AC_MSG_CHECKING([whether dropchain module is requested])
++AC_ARG_ENABLE(dropchain,
++	AS_HELP_STRING([--enable-dropchain],
++		[Enable building of dropchain filter (default=yes)]),
++	[dropchain_module=$enableval],
++	[dropchain_module=yes])
++AC_MSG_RESULT($dropchain_module)
++AM_CONDITIONAL(ENABLE_DROPCHAIN_MODULE, test "$dropchain_module" = "yes")
+ 
+ # hardware access modules
+ AC_MSG_CHECKING([whether ucb1x00 module is requested])
+@@ -163,6 +171,15 @@
+ AC_MSG_RESULT($input_module)
+ AM_CONDITIONAL(ENABLE_INPUT_MODULE, test "$input_module" = "yes")
+ 
++AC_MSG_CHECKING([whether input_filesource module is requested])
++AC_ARG_ENABLE(input_filesource,
++        AS_HELP_STRING([--enable-input_filesource],
++                [Enable building of filesource testing input module (default=yes)]),
++        [input_filesource_module=$enableval],
++        [input_filesource_module=yes])
++AC_MSG_RESULT($input_filesource_module)
++AM_CONDITIONAL(ENABLE_INPUT_FILESOURCE_MODULE, test "$input_filesource_module" = "yes")
++
+ AC_MSG_CHECKING([where to place modules])
+ AC_ARG_WITH(plugindir,
+         AS_HELP_STRING([--with-plugindir=ARG],
+diff -uNr old/plugins/Makefile.am new/plugins/Makefile.am
+--- old/plugins/Makefile.am	2012-01-04 17:19:06.000000000 +0100
++++ new/plugins/Makefile.am	2012-01-04 17:21:05.000000000 +0100
+@@ -11,7 +11,7 @@
+ 
+ AM_CFLAGS		= $(DEBUGFLAGS) $(LIBFLAGS) $(VIS_CFLAGS)
+ LDADD		= -rpath $(PLUGIN_DIR)
+-INCLUDES		= -I$(top_srcdir)/src
++INCLUDES		= -I$(top_srcdir)/src -O0 -g
+   
+ #LTVSN			= -version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) \
+ #			   -release $(LT_RELEASE)
+@@ -43,6 +43,12 @@
+ PTHRES_MODULE =
+ endif
+ 
++if ENABLE_DROPCHAIN_MODULE
++DROPCHAIN_MODULE = dropchain.la
++else
++DROPCHAIN_MODULE =
++endif
++
+ if ENABLE_UCB1X00_MODULE
+ UCB1X00_MODULE = ucb1x00.la
+ else
+@@ -85,6 +91,12 @@
+ INPUT_MODULE =
+ endif
+ 
++if ENABLE_INPUT_FILESOURCE_MODULE
++INPUT_FILESOURCE_MODULE = input_filesource.la
++else
++INPUT_FILESOURCE_MODULE =
++endif
++
+ if ENABLE_H2200_LINEAR_MODULE
+ H2200_LINEAR_MODULE = linear_h2200.la
+ else
+@@ -96,6 +108,7 @@
+ 	$(DEJITTER_MODULE) \
+ 	$(VARIANCE_MODULE) \
+ 	$(PTHRES_MODULE) \
++	$(DROPCHAIN_MODULE) \
+ 	$(UCB1X00_MODULE) \
+ 	$(CORGI_MODULE) \
+ 	$(COLLIE_MODULE) \
+@@ -103,19 +116,28 @@
+ 	$(MK712_MODULE) \
+ 	$(ARCTIC2_MODULE) \
+ 	$(H2200_LINEAR_MODULE) \
+-	$(INPUT_MODULE)
++	$(INPUT_MODULE) \
++	$(INPUT_FILESOURCE_MODULE)
+   
+ variance_la_SOURCES	= variance.c
+ variance_la_LDFLAGS	= -module $(LTVSN)
+ variance_la_LIBADD	= $(top_builddir)/src/libts.la
++variance_la_LIBADD	= $(top_builddir)/src/libts.la
+   
+ dejitter_la_SOURCES	= dejitter.c
++dejitter_la_LIBADD	= $(top_builddir)/src/libts.la
+ dejitter_la_LDFLAGS	= -module $(LTVSN)
+ dejitter_la_LIBADD	= $(top_builddir)/src/libts.la
+   
++linear_la_LIBADD	= $(top_builddir)/src/libts.la
+ linear_la_SOURCES	= linear.c
+ linear_la_LDFLAGS	= -module $(LTVSN)
+ linear_la_LIBADD	= $(top_builddir)/src/libts.la
++pthres_la_LIBADD	= $(top_builddir)/src/libts.la
++
++dropchain_la_SOURCES	= dropchain.c
++dropchain_la_LDFLAGS	= -module $(LTVSN)
++dropchain_la_LIBADD		= $(top_builddir)/src/libts.la
+ 
+ pthres_la_SOURCES	= pthres.c
+ pthres_la_LDFLAGS	= -module $(LTVSN)
+@@ -138,6 +160,11 @@
+ mk712_la_LDFLAGS	= -module $(LTVSN)
+ 
+ arctic2_la_SOURCES	= arctic2-raw.c
++input_la_LIBADD		= $(top_builddir)/src/libts.la
++
++input_filesource_la_SOURCES	= input-filesource.c
++input_filesource_la_LDFLAGS	= -module $(LTVSN)
++input_filesource_la_LIBADD	= $(top_builddir)/src/libts.la
+ arctic2_la_LDFLAGS	= -module $(LTVSN)
+ 
+ input_la_SOURCES	= input-raw.c
+diff -uNr old/plugins/dropchain.c new/plugins/dropchain.c
+--- old/plugins/dropchain.c	1970-01-01 01:00:00.000000000 +0100
++++ new/plugins/dropchain.c	2012-01-04 17:53:43.000000000 +0100
+@@ -0,0 +1,155 @@
++/*
++ *  tslib/plugins/joinstrokes.c
++ *
++ *  Copyright (C) 2011 Quby BV
++ *
++ *  Based on:
++ *    tslib/plugins/pthres.c
++ *    Copyright (C) 2001 Russell King.
++ *
++ * This file is placed under the LGPL.  Please see the file
++ * COPYING for more details.
++ *
++ * Problem: Sometimes while a finger is on the screen a release is
++ * detected, causing for example the same element to be triggered
++ * more than once or a stroke to be broken into pieces.
++ *
++ * Solution: if a touch (pressure >= min_presure) is detected very quickly
++ * after a release (pressure < min_pressure), the release was probably false.
++ * The ideal solution would be to drop that release but that would require a
++ * delay of 1 event and since there will be no event after the last, real,
++ * release (untill the next real touch), that would mean trouble.
++ * Since our application only works with touches, not with drags, we decide
++ * to just drop the complete chain of events that started really soon after
++ * the last release.
++ */
++
++#include <stdlib.h>
++#include <string.h>
++#include <sys/types.h>
++#include <stdio.h>
++#include <unistd.h>
++#include <errno.h>
++#include <limits.h>
++
++#include "tslib.h"
++#include "tslib-filter.h"
++
++struct tslib_dropchain {
++	struct tslib_module_info module;
++	long	minidle;
++	struct timeval lastReleaseOrDrop;
++};
++
++static int
++dropchain_read(struct tslib_module_info *info, struct ts_sample *samp, int nr)
++{
++	struct tslib_dropchain *p = (struct tslib_dropchain *)info;
++	int ret;
++
++	ret = info->next->ops->read(info->next, samp, nr);
++	if (ret <= 0) return ret;
++	nr = 0;
++	int i;
++	struct ts_sample *s;
++
++	for (s = samp, i = 0; i < ret; i++, s++) {
++		if (p->lastReleaseOrDrop.tv_sec > 0) {
++			long diff_u = s->tv.tv_usec - p->lastReleaseOrDrop.tv_usec;
++			int  diff_s = s->tv.tv_sec - p->lastReleaseOrDrop.tv_sec;
++			if (diff_s >= 1) diff_u += 1000000;
++			if (diff_s >= 2) diff_u += 1000000;
++#ifdef DEBUG
++		fprintf(stderr,"Since last dropped|release: %lu \n", diff_u);
++#endif
++			if (diff_u < p->minidle) {
++#ifdef DEBUG
++		fprintf(stderr,"Dropping event %i,%i,%i@%lu,%lu \n", s->x, s->y, s->pressure, s->tv.tv_sec, s->tv.tv_usec);
++#endif
++				//Update timer
++				p->lastReleaseOrDrop.tv_sec = s->tv.tv_sec;
++				p->lastReleaseOrDrop.tv_usec = s->tv.tv_usec;
++				//Drop event
++				int left = ret - nr - 1;
++				if (left > 0) {
++					memmove(s, s + 1, left * sizeof(struct ts_sample));
++					s--;
++					continue;
++				}
++				break;
++			}
++		}
++
++		if (s->pressure == 0) {
++#ifdef DEBUG
++		fprintf(stderr,"Release; set timer to %lu,%lu \n", s->tv.tv_sec, s->tv.tv_usec);
++#endif
++			//If current event is released (and not dropped) set timer
++			p->lastReleaseOrDrop.tv_sec = s->tv.tv_sec;
++			p->lastReleaseOrDrop.tv_usec = s->tv.tv_usec;
++		} else {
++			//Enough idle time; event is OK and we don't need to check until next release
++			p->lastReleaseOrDrop.tv_sec = 0;
++		}
++		nr++;
++	}
++	return nr;
++}
++
++static int dropchain_fini(struct tslib_module_info *info)
++{
++	free(info);
++	return 0;
++}
++
++static const struct tslib_ops dropchain_ops =
++{
++	.read	= dropchain_read,
++	.fini	= dropchain_fini,
++};
++
++static int threshold_vars(struct tslib_module_info *inf, char *str, void *data)
++{
++	struct tslib_dropchain *p = (struct tslib_dropchain *)inf;
++	unsigned long v;
++
++	v = strtoul(str, NULL, 0);
++
++	if (v == ULONG_MAX && errno == ERANGE)
++		return -1;
++
++	p->minidle = v;
++	return 0;
++}
++
++
++static const struct tslib_vars dropchain_vars[] =
++{
++	{ "minidle",	(void *)0, threshold_vars },
++};
++
++#define NR_VARS (sizeof(dropchain_vars) / sizeof(dropchain_vars[0]))
++
++TSAPI struct tslib_module_info *mod_init(struct tsdev *dev, const char *params)
++{
++
++	struct tslib_dropchain *p;
++
++	p = malloc(sizeof(struct tslib_dropchain));
++	if (p == NULL)
++		return NULL;
++
++	p->module.ops = &dropchain_ops;
++
++	p->minidle = 500000;
++
++	/*
++	 * Parse the parameters.
++	 */
++	if (tslib_parse_vars(&p->module, dropchain_vars, NR_VARS, params)) {
++		free(p);
++		return NULL;
++	}
++
++	return &p->module;
++}
+diff -uNr old/plugins/input-filesource.c new/plugins/input-filesource.c
+--- old/plugins/input-filesource.c	1970-01-01 01:00:00.000000000 +0100
++++ new/plugins/input-filesource.c	2012-01-04 17:19:46.000000000 +0100
+@@ -0,0 +1,160 @@
++/*
++ *  tslib/src/ts_read_raw_module.c
++ *
++ *  Original version:
++ *  Copyright (C) 2001 Russell King.
++ *
++ *  Rewritten for the Linux input device API:
++ *  Copyright (C) 2002 Nicolas Pitre
++ *
++ * This file is placed under the LGPL.  Please see the file
++ * COPYING for more details.
++ *
++ * $Id: input-raw.c,v 1.5 2005/02/26 01:47:23 kergoth Exp $
++ *
++ * Read raw pressure, x, y, and timestamp from a touchscreen device.
++ */
++#include "config.h"
++
++#include <errno.h>
++#include <stdio.h>
++#include <limits.h>
++#include <string.h>
++
++#include <stdlib.h>
++#include <fcntl.h>
++#ifdef HAVE_UNISTD_H
++#include <unistd.h>
++#endif
++#include <sys/time.h>
++#include <sys/types.h>
++
++#include <linux/input.h>
++#ifndef EV_SYN /* 2.4 kernel headers */
++# define EV_SYN 0x00
++#endif
++
++#include "tslib-private.h"
++
++#define GRAB_EVENTS_WANTED	1
++#define GRAB_EVENTS_ACTIVE	2
++
++struct tslib_input {
++	struct tslib_module_info module;
++	char* filename;
++	int fd;
++	FILE* fp;
++};
++
++static int ts_input_read(struct tslib_module_info *inf,
++			 struct ts_sample *samp, int nr)
++{
++	printf("read\n");
++	struct tslib_input *i = (struct tslib_input *)inf;
++	int total = 0;
++
++	while (total < nr) {
++		struct timeval tv;
++		gettimeofday(&tv, NULL);
++
++		char e;
++		int x, y;
++		if ( 3 == fscanf(i->fp, "%c%u,%u", &e, &x, &y)) {
++//		if ( 0 < (ret = read(i->fd, buffer, 9))) {
++//			buffer[ret] = 0;
++//			sscanf(buffer, "%c%u,%u", &e, &x, &y);
++			fprintf(stderr, "Read event: %c @ %i,%i\n", e, x, y);
++			//fprintf(stderr, "Read event: %s\n", buffer);
++			//Succesfully read 1 item from the input file
++			if (e == 't') {
++				// Simulate touch event
++				samp->x = x;
++				samp->y = y;
++				samp->pressure = 100;
++				samp->tv = tv;
++				samp++;
++				total++;
++			} else if (e == 'r') {
++				//Simulate release event
++				samp->x = x;
++				samp->y = y;
++				samp->pressure = 0;
++				samp->tv = tv;
++				samp++;
++				total++;
++			}
++		}
++//		else
++//		{
++//			break;
++//		}
++
++	}
++	return total;
++}
++
++static int ts_input_fini(struct tslib_module_info *inf)
++{
++	struct tslib_input *i = (struct tslib_input *)inf;
++	fclose(i->fp);
++//	close(i->fd);
++	free(i);
++	free(inf);
++	return 0;
++}
++
++static const struct tslib_ops __ts_input_filesource_ops = {
++	.read	= ts_input_read,
++	.fini	= ts_input_fini,
++};
++
++//static int parse_raw_file(struct tslib_module_info *inf, char *str, void *data)
++//{
++//	(void)data;
++//	struct tslib_input *i = (struct tslib_input *)inf;
++//	fprintf(stderr, "Using filename: %s\n", str);
++//	if (i->filename) free(i->filename);
++//	i->filename = strdup(str);
++//	return 0;
++//}
++
++//static const struct tslib_vars input_filesource_vars[] =
++//{
++//	{ "input_file", "/tmp/input_events", parse_raw_file },
++//};
++//
++//#define NR_VARS (sizeof(input_filesource_vars) / sizeof(struct tslib_vars))
++
++TSAPI struct tslib_module_info *mod_init(struct tsdev *dev, const char *params)
++{
++	struct tslib_input *i;
++	(void)dev;
++
++	printf("Hello!\n");
++	i = malloc(sizeof(struct tslib_input));
++	if (i == NULL)
++		return NULL;
++
++	i->module.ops = &__ts_input_filesource_ops;
++
++//	i->filename = strdup("/tmp/input_events");
++////	if (tslib_parse_vars(&i->module, input_filesource_vars, NR_VARS, params)) {
++////		free(i);
++////		return NULL;
++////	}
++//	i->fd = open(i->filename, O_RDONLY | O_NONBLOCK);
++//	if (!i->fd)
++//	{
++//		fprintf(stderr, "Unable to open input file %s\n", i->filename);
++//		free(i);
++//		return NULL;
++//	}
++//	else
++//	{
++//		fprintf(stderr, "Opened input file %s\n", i->filename);
++//	}
++//	fcntl(i->fd, F_SETFL, fcntl(i->fd, F_GETFL) & ~O_NONBLOCK);
++//	i->fp = fdopen(i->fd, "r");
++	i->fp = fdopen(dev->fd, "r");
++	return &(i->module);
++}

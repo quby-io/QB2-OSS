@@ -1,0 +1,54 @@
+--- opkg-try0/libopkg/opkg_cmd.c	2012-03-01 12:11:53.000000000 +0100
++++ opkg-try0/libopkg/opkg_cmd.c	2012-03-02 12:27:36.000000000 +0100
+@@ -517,6 +517,31 @@
+      return err;
+ }
+ 
++static void
++_qb_update_status(const char *action, int i, int len, pkg_t *pkg)
++{
++	if (conf->download_only)
++		action = "Downloading";
++	
++	int item = i+1,
++		items = len,
++		perc;
++
++	if (i >= len - 1)
++		perc = 100;
++	else
++		perc = 99 * i / len;
++
++	opkg_msg(NOTICE, "/tmp/update.status.vars: %s %i%% (%i/%i) %s\n", action, perc, item, items, (pkg ? pkg->name : ""));
++
++	FILE* fp = fopen("/tmp/update.status.vars", "w");
++	if (fp)
++	{
++		fprintf(fp, "action=%s&item=%i&items=%i&pkg=%s", action, perc, 100, (pkg ? pkg->name : ""));
++		fclose(fp);
++	}
++}
++
+ static int
+ opkg_upgrade_cmd(int argc, char **argv)
+ {
+@@ -562,11 +587,19 @@
+ 	  pkg_info_preinstall_check();
+ 
+ 	  pkg_hash_fetch_all_installed(installed);
++
++	  _qb_update_status("Installing", 0, installed->len, NULL);
++	  
+ 	  for (i = 0; i < installed->len; i++) {
+ 	       pkg = installed->pkgs[i];
+ 	       if (opkg_upgrade_pkg(pkg))
+ 		       err = -1;
++	    // if the old package is uninstalled, then it is part of an upgrade
++	    if (pkg->state_want == SW_DEINSTALL)
++	      _qb_update_status("Installing", i, installed->len, pkg);
+ 	  }
++	  _qb_update_status("Installing", installed->len-1, installed->len, NULL);
++	  
+ 	  pkg_vec_free(installed);
+      }
+ 

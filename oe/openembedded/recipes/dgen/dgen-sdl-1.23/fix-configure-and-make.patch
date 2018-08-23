@@ -1,0 +1,201 @@
+Index: dgen-sdl-1.23/Makefile.am
+===================================================================
+--- dgen-sdl-1.23.orig/Makefile.am
++++ dgen-sdl-1.23/Makefile.am
+@@ -5,7 +5,7 @@ include $(top_srcdir)/Makefile.asm.am
+ DIST_SUBDIRS = star musa mz80 sdl
+ SUBDIRS = @CPUDIRS@ @INTERFACE@
+ 
+-INCLUDES += -I$(top_srcdir)/@INTERFACE@
++INCLUDES = -I$(top_srcdir)/@INTERFACE@
+ 
+ bin_PROGRAMS = dgen tobin
+ 
+Index: dgen-sdl-1.23/Makefile.asm.am
+===================================================================
+--- dgen-sdl-1.23.orig/Makefile.asm.am
++++ dgen-sdl-1.23/Makefile.asm.am
+@@ -1,5 +1,5 @@
+ # Tell how to make assembler files
+-SUFFIXES += .asmu .asm
++SUFFIXES = .asmu .asm
+ 
+ .asm.o:
+ 	@NASM@ -f @NASM_FMT@ $<
+Index: dgen-sdl-1.23/configure.in
+===================================================================
+--- dgen-sdl-1.23.orig/configure.in
++++ dgen-sdl-1.23/configure.in
+@@ -62,41 +62,39 @@ CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
+ EXTRAOBJS=
+ 
+ dnl Check for SDL joystick
+-JOYSTICK_SUPPORT=no
+-AC_CHECK_HEADER(SDL_joystick.h, JOYSTICK_SUPPORT=SDL,
+-	dnl Check for Linux joystick as a backup
+-	AC_CHECK_HEADER(linux/joystick.h, JOYSTICK_SUPPORT=LINUX))
+-
+-dnl Check for X (so we can find the OpenGL headers)
+-AC_PATH_XTRA
+-CFLAGS="$CFLAGS $X_CFLAGS"
+-CXXFLAGS="$CXXFLAGS $X_CFLAGS"
+-LIBS="$LIBS $X_LIBS"
++AC_CHECK_HEADER(SDL_joystick.h, JOYSTICK_SUPPORT=SDL, JOYSTICK_SUPPORT=no)
+ 
+-dnl Check for OpenGL support in SDL
+-AC_ARG_WITH(opengl,
+-	    [  --without-opengl        Don't use SDL OpenGL support],
+-	    OPENGL_SUPPORT=$withval, OPENGL_SUPPORT=yes)
+-if test x$OPENGL_SUPPORT \!= xno; then
+-  AC_MSG_CHECKING([for OpenGL support in SDL])
+-  AC_TRY_COMPILE([#include <SDL.h>], [int foo() { int x = SDL_OPENGL; }],
+-	         OPENGL_SUPPORT=yes, OPENGL_SUPPORT=no)
+-  AC_MSG_RESULT($OPENGL_SUPPORT)
+-  # Check for the GL libs
+-  if test x$OPENGL_SUPPORT \!= xno; then
+-    oldCPPFLAGS=$CPPFLAGS
+-    oldLIBS=$LIBS
+-    CPPFLAGS="$CPPFLAGS $X_CFLAGS"
+-    LIBS="$LIBS $SDL_LIBS"
+-    AC_CHECK_LIB(GL, glBegin,
+-      AC_CHECK_HEADER(GL/gl.h, , OPENGL_SUPPORT=no),
+-      OPENGL_SUPPORT=no
+-    )
+-    LIBS=$oldLIBS
+-    CPPFLAGS=$oldCPPFLAGS
+-  fi
++#dnl Check for X (so we can find the OpenGL headers)
++#AC_PATH_XTRA
++#CFLAGS="$CFLAGS $X_CFLAGS"
++#CXXFLAGS="$CXXFLAGS $X_CFLAGS"
++#LIBS="$LIBS $X_LIBS"
+ 
+-fi
++dnl Check for OpenGL support in SDL
++OPENGL_SUPPORT=no
++#AC_ARG_WITH(opengl,
++#	    [  --without-opengl        Don't use SDL OpenGL support],
++#	    OPENGL_SUPPORT=$withval, OPENGL_SUPPORT=yes)
++#if test x$OPENGL_SUPPORT \!= xno; then
++#  AC_MSG_CHECKING([for OpenGL support in SDL])
++#  AC_TRY_COMPILE([#include <SDL.h>], [int foo() { int x = SDL_OPENGL; }],
++#	         OPENGL_SUPPORT=yes, OPENGL_SUPPORT=no)
++#  AC_MSG_RESULT($OPENGL_SUPPORT)
++#  # Check for the GL libs
++#  if test x$OPENGL_SUPPORT \!= xno; then
++#    oldCPPFLAGS=$CPPFLAGS
++#    oldLIBS=$LIBS
++#    CPPFLAGS="$CPPFLAGS $X_CFLAGS"
++#    LIBS="$LIBS $SDL_LIBS"
++#    AC_CHECK_LIB(GL, glBegin,
++#      AC_CHECK_HEADER(GL/gl.h, , OPENGL_SUPPORT=no),
++#      OPENGL_SUPPORT=no
++#    )
++#    LIBS=$oldLIBS
++#    CPPFLAGS=$oldCPPFLAGS
++#  fi
++#
++#fi
+ 
+ if test x$OPENGL_SUPPORT \!= xno; then
+   AC_DEFINE(SDL_OPENGL_SUPPORT)
+@@ -166,8 +164,11 @@ changequote([,])
+ 				else
+ 					CHOP_=cat
+ 				fi
+-				AM_CONDITIONAL(NO_USCORE,
+-					       test x$NASM_FMT = xelf)
++#				AM_CONDITIONAL(NO_USCORE,
++#					       test x$NASM_FMT = xelf)
++				if test x$NASM_FMT = xelf; then
++					NO_USCORE=yes
++				fi
+ 
+ 				dnl Check for MMX
+ 				AC_ARG_WITH(mmx,
+Index: dgen-sdl-1.23/musa/Makefile.am
+===================================================================
+--- dgen-sdl-1.23.orig/musa/Makefile.am
++++ dgen-sdl-1.23/musa/Makefile.am
+@@ -8,7 +8,10 @@ noinst_PROGRAMS = m68kmake
+ 
+ noinst_LIBRARIES = libmusa68.a
+ 
+-m68kmake_SOURCES = m68kmake.c
++#m68kmake_SOURCES = m68kmake.c
++
++m68kmake: m68kmake.c
++	$(HOSTCC) -o m68kmake m68kmake.c
+ 
+ m68kops.c: m68kmake
+ 	./m68kmake
+Index: dgen-sdl-1.23/mz80/Makefile.am
+===================================================================
+--- dgen-sdl-1.23.orig/mz80/Makefile.am
++++ dgen-sdl-1.23/mz80/Makefile.am
+@@ -3,13 +3,11 @@
+ 
+ include $(top_srcdir)/Makefile.asm.am
+ # Since the chop_ script flakes on mz80, we use mz80's builtin facility
+-if NO_USCORE
+- plain = -l
+-else
+- plain =
+-endif
++if test x$NO_USCORE \!= x; then
++ plain=-l
++fi
+ 
+-INCLUDES += -I..
++INCLUDES = -I..
+ 
+ EXTRA_DIST = mz80.txt
+ 
+Index: dgen-sdl-1.23/sdl/Makefile.am
+===================================================================
+--- dgen-sdl-1.23.orig/sdl/Makefile.am
++++ dgen-sdl-1.23/sdl/Makefile.am
+@@ -3,12 +3,15 @@
+ 
+ EXTRA_DIST = dgenfont.pbm chartfont.c
+ 
+-INCLUDES += -I..
++INCLUDES = -I..
+ 
+ noinst_PROGRAMS = pbm2df
+ 
+ noinst_LIBRARIES = libpd.a
+ 
++pbm2df: pbm2df.c
++	$(HOSTCC) -o pbm2df pbm2df.c
++
+ # built sources
+ 
+ BUILT_SOURCES = dgenfont.cpp
+Index: dgen-sdl-1.23/star/Makefile.am
+===================================================================
+--- dgen-sdl-1.23.orig/star/Makefile.am
++++ dgen-sdl-1.23/star/Makefile.am
+@@ -7,7 +7,7 @@ include $(top_srcdir)/Makefile.asm.am
+ # license)
+ EXTRA_DIST = cpudebug.c cpudebug.h star.c starcpu.h stardoc.txt
+ 
+-INCLUDES += -I..
++INCLUDES = -I..
+ 
+ noinst_LIBRARIES = libstarcpu.a
+ 
+Index: dgen-sdl-1.23/musa/m68kcpu.h
+===================================================================
+--- dgen-sdl-1.23.orig/musa/m68kcpu.h
++++ dgen-sdl-1.23/musa/m68kcpu.h
+@@ -51,7 +51,8 @@
+ #define int32  long
+ 
+ /* int and unsigned int must be at least 32 bits wide */
+-#define uint   unsigned int
++//#define uint   unsigned int
++typedef unsigned int uint;
+ 
+ 
+ /* Allow for architectures that don't have 8-bit sizes */

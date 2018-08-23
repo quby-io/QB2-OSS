@@ -1,0 +1,33 @@
+--- opkg-try0/libopkg/opkg_download.c.orig	2012-03-01 12:11:53.000000000 +0100
++++ opkg-try0/libopkg/opkg_download.c	2012-03-02 16:05:42.000000000 +0100
+@@ -353,14 +357,17 @@
+     gpgme_signature_t s;
+     char *trusted_path = NULL;
+ 
++	// prevent GPGME from using keys from ~/.gnupg/!
++	setenv("GNUPGHOME", "/etc/opkg", 1/*overwrite*/);
++
+     gpgme_check_version (NULL);
+ 
+     err = gpgme_new (&ctx);
+ 
+     if (err)
+ 	return -1;
+-
+-    trusted_path = root_filename_alloc("/etc/opkg/trusted.gpg");
++	
++    trusted_path = root_filename_alloc("/etc/opkg/pubring.gpg");
+     err = gpgme_data_new_from_file (&key, trusted_path, 1);
+     free (trusted_path);
+     if (err)
+--- opkg-try0/utils/opkg-key.orig	2012-03-01 12:11:52.000000000 +0100
++++ opkg-try0/utils/opkg-key	2012-03-02 16:08:16.000000000 +0100
+@@ -43,7 +43,7 @@
+ # We don't use a secret keyring, of course, but gpg panics and
+ # implodes if there isn't one available
+ 
+-GPG="gpg --no-options --no-default-keyring --keyring $ROOT/etc/opkg/trusted.gpg --secret-keyring $ROOT/etc/opkg/secring.gpg --trustdb-name $ROOT/etc/opkg/trustdb.gpg"
++GPG="gpg --no-options --no-default-keyring --keyring $ROOT/etc/opkg/pubring.gpg --secret-keyring $ROOT/etc/opkg/secring.gpg --trustdb-name $ROOT/etc/opkg/trustdb.gpg"
+ 
+ case "$command" in
+     add)

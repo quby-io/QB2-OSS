@@ -1,0 +1,21 @@
+--- /tmp/Makefile	2008-07-21 22:08:58.000000000 +0200
++++ git/Makefile	2008-07-21 22:10:08.023198000 +0200
+@@ -5,6 +5,6 @@
+ CFLAGS = -O3 -Wall -fomit-frame-pointer -mcpu=cortex-a8 -mfpu=neon \
+ 	-I$(LINUX)/include -I$(FFMPEG)
+ LDFLAGS = -L$(FFMPEG)/libavcodec -L$(FFMPEG)/libavformat -L$(FFMPEG)/libavutil
+-LDLIBS = -lavformat -lavcodec -lavutil -lm -lz -lpthread -lrt
++LDLIBS = -lavformat -lavcodec -lavutil -lz -ldl -lbz2 -lfaac -lgsm -lmp3lame -lm -lpthread -lrt
+ 
+ all: omapfbplay
+--- /tmp/omapfbplay.c	2008-11-28 10:28:21.000000000 +0100
++++ git/omapfbplay.c	2008-11-28 10:28:47.000000000 +0100
+@@ -37,7 +37,7 @@
+ #include <semaphore.h>
+ 
+ #include <linux/fb.h>
+-#include <mach/omapfb.h>
++#include "omapfb.h"
+ 
+ #include <libavformat/avformat.h>
+ #include <libavcodec/avcodec.h>

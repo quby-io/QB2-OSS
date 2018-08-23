@@ -1,0 +1,23 @@
+Index: dash-0.5.5.1/src/Makefile.am
+===================================================================
+--- dash-0.5.5.1.orig/src/Makefile.am	2009-01-13 15:37:13.000000000 -0800
++++ dash-0.5.5.1/src/Makefile.am	2009-08-26 23:56:58.879275498 -0700
+@@ -44,6 +44,18 @@
+ 	mktokens mkbuiltins builtins.def.in mkinit.c \
+ 	mknodes.c nodetypes nodes.c.pat mksyntax.c mksignames.c
+ 
++mknodes:
++	$(COMPILE_FOR_BUILD) mknodes.c -o mknodes
++
++mksyntax:
++	$(COMPILE_FOR_BUILD) mksyntax.c -o mksyntax
++
++mkinit:
++	$(COMPILE_FOR_BUILD) mkinit.c -o mkinit
++
++mksignames:
++	$(COMPILE_FOR_BUILD) mksignames.c -o mksignames
++
+ token.h: mktokens
+ 	sh $^
+ 

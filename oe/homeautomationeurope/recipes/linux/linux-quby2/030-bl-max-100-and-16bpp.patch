@@ -1,0 +1,24 @@
+--- linux_r03/arch/arm/mach-imx/mach-ed20.c	2011-09-22 12:14:58.000000000 +0200
++++ linux_r03/arch/arm/mach-imx/mach-ed20.c	2011-10-11 14:09:59.000000000 +0200
+@@ -79,8 +79,8 @@
+ 
+ /* Backlight */
+ #define BL_MIN_VAL 0
+-#define BL_MAX_VAL 255
+-#define BL_DEF_VAL 128
++#define BL_MAX_VAL 100 /*255*/
++#define BL_DEF_VAL 50 /*128*/
+ 
+ /* Z-Wave */
+ #define ZW_RESET_N_GPIO        (GPIO_PORTF | 14)
+--- linux_r03/drivers/video/mx2fb.c	2011-09-27 14:54:56.000000000 +0200
++++ linux_r03/drivers/video/mx2fb.c	2011-10-11 13:53:01.000000000 +0200
+@@ -51,7 +51,7 @@
+ 
+ static char *fb_mode;
+ static int fb_enabled;
+-static unsigned long default_bpp = 32;
++static unsigned long default_bpp = 16; /*32*/
+ static ATOMIC_NOTIFIER_HEAD(mx2fb_notifier_list);
+ static struct clk *lcdc_clk;
+ /*!

@@ -1,0 +1,9 @@
+--- pcmanfm-0.3.2-beta/pcmanfm.desktop.in.old	2006-09-25 11:43:07.000000000 +0100
++++ pcmanfm-0.3.2-beta/pcmanfm.desktop.in	2006-09-25 11:44:59.000000000 +0100
+@@ -1,4 +1,4 @@
+ [Desktop Entry]
+ Encoding=UTF-8
+-Name=PCMan File Manager
++Name=File Manager
+ Categories=Application;System;Utility;Core;GTK;
+

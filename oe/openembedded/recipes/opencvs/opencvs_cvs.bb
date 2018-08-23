@@ -1,0 +1,21 @@
+# FIXME: Update to work with some other MD5 implementation.
+# It's silly to pull in OpenSSL just for that.
+DEPENDS = "openssl"
+DESCRIPTION = "BSD-licensed equivalent of the popular versioning system CVS."
+LICENSE = "BSD"
+PRIORITY = "optional"
+SECTION = "console/network"
+SRCDATE = "20060814"
+PV = "0.0+cvs${SRCDATE}"
+PR = "r1"
+
+SRC_URI = "cvs://anoncvs@anoncvs.ca.openbsd.org/cvs;module=src/usr.bin/cvs;method=ext \
+	   file://linux.patch"
+S = "${WORKDIR}/cvs"
+
+inherit autotools
+
+do_clean_tree () {
+	rm -rf ${S}/cvs ${S}/cvsd
+}
+addtask clean_tree after do_patch before do_configure

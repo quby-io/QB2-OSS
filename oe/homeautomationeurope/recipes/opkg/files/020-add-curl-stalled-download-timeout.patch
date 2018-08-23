@@ -1,0 +1,13 @@
+--- opkg-try0/libopkg/opkg_download.c	2012-03-01 12:11:53.000000000 +0100
++++ opkg-try0/libopkg/opkg_download.c	2012-03-01 14:53:19.000000000 +0100
+@@ -136,6 +136,10 @@
+ 	curl_easy_setopt (curl, CURLOPT_URL, src);
+ 	curl_easy_setopt (curl, CURLOPT_WRITEDATA, file);
+ 
++	// if the download speed is below 1 byte/sec for 60 seconds: abort
++	curl_easy_setopt (curl, CURLOPT_LOW_SPEED_LIMIT, 1);
++	curl_easy_setopt (curl, CURLOPT_LOW_SPEED_TIME, 60);
++
+ 	res = curl_easy_perform (curl);
+ 	fclose (file);
+ 	if (res)

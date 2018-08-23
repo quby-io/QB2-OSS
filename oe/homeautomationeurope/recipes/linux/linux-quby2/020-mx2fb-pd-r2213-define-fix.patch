@@ -1,0 +1,43 @@
+Index: drivers/video/Kconfig
+===================================================================
+--- linux_r06/drivers/video/Kconfig	(.../release/linux_r06)	(revision 2215)
++++ linux/drivers/video/Kconfig	(.../work/linux)	(revision 2215)
+@@ -418,7 +418,7 @@
+ 	select FB_CFB_IMAGEBLIT
+ 
+ config FB_MX2_DONT_DISABLE_LCD
+-	bool "Dont disable LCD clock during blanking"
++	bool "Dont disable LCD during blanking"
+ 	depends on FB_MX2
+ 	help
+ 	  Don't disable LCD when blanked, only disable backlight.
+Index: drivers/video/mx2fb.c
+===================================================================
+--- linux_r06/drivers/video/mx2fb.c	(.../release/linux_r06)	(revision 2215)
++++ linux/drivers/video/mx2fb.c	(.../work/linux)	(revision 2215)
+@@ -834,9 +834,9 @@
+ 	if (first_enable > 0) {
+ 		_enable_graphic_window(info);
+ 		_disable_graphic_window(info);
+-#ifndef CONFIG_FB_MX2_DONT_DISABLE_LCD_CLK
++#ifndef CONFIG_FB_MX2_DONT_DISABLE_LCD
+ 		first_enable--;
+-#endif /* CONFIG_FB_MX2_DONT_DISABLE_LCD_CLK */
++#endif /* CONFIG_FB_MX2_DONT_DISABLE_LCD */
+ 	}
+ 
+ 	if (mx2fbi->type == MX2FB_TYPE_GW)
+@@ -885,11 +885,11 @@
+ 		_disable_graphic_window(info);
+ 	else {
+ 		if (fb_enabled) {
+-#ifndef CONFIG_FB_MX2_DONT_DISABLE_LCD_CLK
++#ifndef CONFIG_FB_MX2_DONT_DISABLE_LCD
+ 			clk_disable(lcdc_clk);
+ 			enable_lcd(0);
+ 			power_lcd(0);
+-#endif /* CONFIG_FB_MX2_DONT_DISABLE_LCD_CLK */
++#endif /* CONFIG_FB_MX2_DONT_DISABLE_LCD */
+ 			fb_enabled = 0;
+ 		}
+ #ifdef CONFIG_FB_MXC_TVOUT

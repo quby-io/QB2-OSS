@@ -1,0 +1,50 @@
+#!/bin/sh
+
+print_boot_msg()
+{
+  if [ ! -e /dev/tty ]; then
+      /bin/mknod -m 0666 /dev/tty c 5 0
+  fi
+
+  if ( > /dev/tty0 ) 2>/dev/null; then
+      vtmaster=/dev/tty0
+  elif ( > /dev/vc/0 ) 2>/dev/null; then
+      vtmaster=/dev/vc/0
+  elif ( > /dev/console ) 2>/dev/null; then
+      vtmaster=/dev/console
+  else
+      vtmaster=/dev/null
+  fi
+  echo "$1 (print_boot_msg)"
+  echo "$1" > $vtmaster
+}
+
+print_boot_heading()
+{
+        print_boot_msg ""
+        print_boot_msg "$1"
+}
+
+print_boot_key_val()
+{
+        local hpos="`echo -e -n '\033[20G'`"
+        print_boot_msg "* $1${hpos} $2"
+}
+
+print_boot_ifaces()
+{
+	IFACES="`grep ':' /proc/net/dev | grep -v 'lo:' | cut -d':' -f1 | xargs`"
+	for iface in $IFACES
+	do
+		MAC="`cat /sys/class/net/$iface/address`"
+		IP="`ifconfig $iface | sed -r -n -e 's/^.+inet addr:([^ ]+) .+$/\1/p'`"
+		[ -z $IP ] && IP='[No IP from DHCP Server]'
+		case $iface in
+		eth*)	TYPE="Wired"	;;
+		wlan*)	TYPE="Wireless"	;;
+		tap*)	TYPE="Tunnel"	;;
+		*)	TYPE="Unknown"	;;
+		esac
+		print_boot_key_val "$TYPE ($iface)" "$MAC  $IP"
+	done
+}

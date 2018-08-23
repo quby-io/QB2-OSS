@@ -1,0 +1,11 @@
+--- attr-2.4.44/include/buildmacros.orig	2011-02-15 10:36:10.000000000 +0100
++++ attr-2.4.44/include/buildmacros	2011-02-15 10:36:20.000000000 +0100
+@@ -40,7 +40,7 @@
+ 	  $(LFILES:.l=.o) \
+ 	  $(YFILES:%.y=%.tab.o)
+ 
+-INSTALL	= $(TOPDIR)/include/install-sh -o $(PKG_USER) -g $(PKG_GROUP)
++INSTALL	= $(TOPDIR)/include/install-sh -o $(PKG_USER) -g "$(PKG_GROUP)"
+ 
+ SHELL = /bin/sh
+ IMAGES_DIR = $(TOPDIR)/all-images

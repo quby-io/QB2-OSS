@@ -1,0 +1,55 @@
+
+ === OpenEmbedded tree for Architecture qb2 rootfs + kernel ===
+
+Archive directory overview:
+
+  ./oe
+  ./oe/bitbake                          	(Pre-built-i686 bitbake release 1.10.2)
+  ./oe/psyco-dist                       	(Pre-built-i686 psyco release 1.6)
+  ./oe/Python-2.6.6                     	(Pre-built-i686 Python release 2.6.6)
+  ./oe/qb2                              		(Architecture-specific build+conf dir)
+  ./oe/homeautomationeurope  (Quby OE resources, previously known as HAE)
+  ./oe/openembedded                 (Generic OE resources)
+  ./oe/sources                               (Download destination for source archives)
+  ./README                           	       (Guess what...)
+
+OE-prep-work: required software, read these:
+
+  http://www.openembedded.org/index.php/RequiredSoftware
+  http://www.openembedded.org/index.php/Getting_started
+  You don't need to download OpenEmbedded itself, it's included in this 
+  release. This page will probably get you there the fastest:
+  http://www.openembedded.org/index.php/OEandYourDistro
+
+Getting started:
+
+  # go to a base dir somewhere:
+  # - as a reqular user (not root!)
+  # - with lotsa space (25GB should be enough)
+  # - fast, preferably not a (slow) network mount
+  # - with no symlinks above it
+  # - try to keep it short: OE will add plenty of depth before you're done :P
+  cd /opt
+  # Clone repo
+  # go to workdir
+  cd oe/qb2
+  # set PATH + BBPATH vars (note the separate '.')
+  . ../bb_env.sh
+  # now we can get to work
+  bitbake image-base-qb2
+  # grab 144 cups of coffee, go for a manicure, mow the lawn, etc :)
+
+After a lot of diskspace & CPU cycles this should yield:
+
+  ls -l tmp/deploy/images/
+  # qb2-base-rXX-YYYYMMDDHHIISS.rootfs.ubi.gz          ~ 12M
+  # uImage-qb2-hae-2.6.36-rXX-hXX-YYYYMMDDHHIISS.bin   ~ 2M
+  
+  The sources dir should end up at ~ 2GB
+  The qb2/tmp dir should end up at ~ 23GB
+
+Known issues:
+
+  - if Python says 'ImportError: No module named time', try 'ln -s lib.linux-i686-2.6 ../Python-2.6.6/build/lib.linux-x86_64-2.6'
+  - to save some disk space usage try enabling 'INHERIT += "rm_work"' in qb2/conf/local.conf
+  - if you have multiple cores, try modify 'BB_NUMBER_THREADS' in qb2/conf/local.conf

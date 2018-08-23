@@ -1,0 +1,50 @@
+Index: DirectFB-1.4.11/directfb-internal.pc.in
+===================================================================
+--- DirectFB-1.4.11.orig/directfb-internal.pc.in	2010-10-08 14:43:46.000000000 +0200
++++ DirectFB-1.4.11/directfb-internal.pc.in	2011-02-08 15:02:50.556167491 +0100
+@@ -8,4 +8,4 @@
+ Description: Third party module support package for DirectFB.
+ Version: @VERSION@
+ Requires: directfb = @VERSION@
+-Cflags: @DFB_INTERNAL_CFLAGS@ -I@INTERNALINCLUDEDIR@
++Cflags: @DFB_INTERNAL_CFLAGS@ -I${includedir}/directfb -I${includedir}
+Index: DirectFB-1.4.11/lib/direct/direct.pc.in
+===================================================================
+--- DirectFB-1.4.11.orig/lib/direct/direct.pc.in	2010-10-08 14:43:46.000000000 +0200
++++ DirectFB-1.4.11/lib/direct/direct.pc.in	2011-02-08 15:03:53.676167612 +0100
+@@ -10,4 +10,4 @@
+ Version: @VERSION@
+ Libs: -L${libdir} -ldirect @THREADLIB@
+ Libs.private: -L${libdir} @DYNLIB@
+-Cflags: @THREADFLAGS@ -I@INCLUDEDIR@
++@THREADFLAGS@ -I${includedir}/directfb -I${includedir}
+Index: DirectFB-1.4.11/lib/fusion/fusion.pc.in
+===================================================================
+--- DirectFB-1.4.11.orig/lib/fusion/fusion.pc.in	2010-10-08 14:43:46.000000000 +0200
++++ DirectFB-1.4.11/lib/fusion/fusion.pc.in	2011-02-08 15:02:50.556167491 +0100
+@@ -8,4 +8,4 @@
+ Version: @VERSION@
+ Requires: direct
+ Libs: -L${libdir} -lfusion
+-Cflags: -I@INCLUDEDIR@
++Cflags: -I${includedir}/directfb -I${includedir}
+Index: DirectFB-1.4.11/lib/voodoo/voodoo.pc.in
+===================================================================
+--- DirectFB-1.4.11.orig/lib/voodoo/voodoo.pc.in	2010-10-08 14:43:46.000000000 +0200
++++ DirectFB-1.4.11/lib/voodoo/voodoo.pc.in	2011-02-08 15:02:50.576167451 +0100
+@@ -8,4 +8,4 @@
+ Version: @VERSION@
+ Requires: direct
+ Libs: -L${libdir} -lvoodoo
+-Cflags: -I@INCLUDEDIR@
++Cflags: -I${includedir}/directfb -I${includedir}
+Index: DirectFB-1.4.11/directfb.pc.in
+===================================================================
+--- DirectFB-1.4.11.orig/directfb.pc.in	2010-11-15 22:13:59.000000000 +0100
++++ DirectFB-1.4.11/directfb.pc.in	2011-02-08 15:04:41.796167163 +0100
+@@ -9,4 +9,4 @@
+ Requires: @DEP_VOODOO@ fusion direct
+ Libs: -L${libdir} -ldirectfb @THREADLIB@ @OSX_LIBS@
+ Libs.private: -L${libdir} @MEDIALIB@ @DYNLIB@ @ZLIB_LIBS@
+-Cflags: @THREADFLAGS@ -I@INCLUDEDIR@
++Cflags: @THREADFLAGS@ -I${includedir}/directfb -I${includedir}

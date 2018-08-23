@@ -1,0 +1,13 @@
+--- linux_r03/arch/arm/mach-imx/mach-ed20.c	2011-09-22 12:14:58.000000000 +0200
++++ linux_r03/arch/arm/mach-imx/mach-ed20.c	2011-10-11 14:09:59.000000000 +0200
+@@ -79,8 +79,8 @@
+ 
+ /* Backlight */
+ #define BL_MIN_VAL 0
+-#define BL_MAX_VAL 255
+-#define BL_DEF_VAL 128
++#define BL_MAX_VAL 100
++#define BL_DEF_VAL 50
+ 
+ /* Z-Wave */
+ #define ZW_RESET_N_GPIO        (GPIO_PORTF | 14)

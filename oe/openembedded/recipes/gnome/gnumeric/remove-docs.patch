@@ -1,0 +1,10 @@
+Index: gnumeric-1.8.2/Makefile.am
+===================================================================
+--- gnumeric-1.8.2.orig/Makefile.am	2008-01-15 02:53:04.000000000 +0000
++++ gnumeric-1.8.2/Makefile.am	2008-04-01 22:44:44.000000000 +0000
+@@ -1,4 +1,4 @@
+-SUBDIRS = . po po-functions src plugins icons templates doc tools schemas test
++SUBDIRS = . po po-functions src plugins icons templates tools schemas test
+ 
+ XML_I18N_XML_KIND = --pass-through
+ 

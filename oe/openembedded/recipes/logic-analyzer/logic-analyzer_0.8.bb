@@ -1,0 +1,47 @@
+DESCRIPTION = "A Java-based logical analyzer for home use."
+LICENSE = "GPL"
+HOMEPAGE = "http://sump.org/projects/analyzer/"
+
+PR = "r3"
+
+inherit java
+
+DEPENDS = "rxtx"
+RDEPENDS_${PN} = "java2-runtime classpath-awt librxtx-java"
+
+SRC_URI = "\
+    http://sump.org/projects/analyzer/downloads/la-src-${PV}.tar.bz2 \
+    file://cp-run-fix.patch \
+    file://client-makefile.patch \
+    file://scrolling-capture-dialog.patch \
+    "
+
+S = "${WORKDIR}/LogicAnalyzer"
+
+do_compile() {
+
+  oe_runmake -C client all jar \
+    JAR=gjar \
+    JAVAH="gjavah -classpath \$(CLASSPATH) -d \$(DEST) -jni" \
+    JAVAINCLUDEDIR=${STAGING_INCDIR}/classpath \
+    JAVAC="javac -d \$(TOP)/ -O -source 1.3 -target 1.3" \
+    JAVAC_FLAGS="-sourcepath . -bootclasspath ${STAGING_DATADIR_NATIVE}/classpath/glibj.zip -classpath ${STAGING_DATADIR}/java/RXTXcomm.jar"
+    
+  oe_java_simple_wrapper org.sump.analyzer.Loader analyzer.jar RXTXcomm.jar
+}
+
+do_install() {
+  oe_jarinstall client/analyzer.jar
+
+  install -d ${D}${bindir}
+  install -m 0555 ${PN} ${D}${bindir}
+}
+
+PACKAGES = "${PN}"
+
+FILES_${PN} = "${datadir_java}/analyzer.jar ${bindir}/${PN}"
+
+PACKAGE_ARCH = "all"
+
+SRC_URI[md5sum] = "dc8f16011da37ee3114616b96dc80798"
+SRC_URI[sha256sum] = "c735f3c0b32f379020a52965e5af45fcd00330b94f94d51603ab5a05b06675fb"

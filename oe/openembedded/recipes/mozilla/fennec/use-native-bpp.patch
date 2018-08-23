@@ -1,0 +1,49 @@
+--- a/gfx/thebes/gfxPlatformGtk.cpp	2010-04-19 18:02:04.000000000 +0000
++++ b/gfx/thebes/gfxPlatformGtk.cpp	2010-04-25 11:36:49.000000000 +0000
+@@ -91,7 +91,12 @@
+ #include FT_FREETYPE_H
+ #endif
+ 
++#include "nsIPrefService.h"
++#include "nsIPrefBranch.h"
++#include "nsServiceManagerUtils.h"
++
+ gfxFontconfigUtils *gfxPlatformGtk::sFontconfigUtils = nsnull;
++static PRBool gUseSystemVisualFormat = PR_FALSE;
+ 
+ #ifndef MOZ_PANGO
+ typedef nsDataHashtable<nsStringHashKey, nsRefPtr<FontFamily> > FontTable;
+@@ -127,6 +132,16 @@
+     gCodepointsWithNoFonts = new gfxSparseBitSet();
+     UpdateFontList();
+ #endif
++
++    nsCOMPtr<nsIPrefBranch> prefs = do_GetService(NS_PREFSERVICE_CONTRACTID);
++    if (!prefs)
++        return;
++
++    PRBool val = PR_FALSE;
++    nsresult rv;
++    rv = prefs->GetBoolPref("gfx.system.visual.format", &val);
++    if (NS_SUCCEEDED(rv))
++        gUseSystemVisualFormat = val;
+ }
+ 
+ gfxPlatformGtk::~gfxPlatformGtk()
+@@ -202,8 +217,14 @@
+         return nsnull;
+ 
+     GdkPixmap* pixmap = nsnull;
+-    XRenderPictFormat* xrenderFormat =
+-        XRenderFindStandardFormat(display, xrenderFormatID);
++    XRenderPictFormat* xrenderFormat = nsnull;
++
++    if (xrenderFormatID == PictStandardRGB24 && gUseSystemVisualFormat) {
++        // Actually we want not strictly RGB24, but the fastest non-alpha
++        // format (XXX to be verified if it is actually safe)
++        xrenderFormat = XRenderFindVisualFormat(display, GDK_VISUAL_XVISUAL(gdk_visual_get_system()));
++    }
++    if (!xrenderFormat) xrenderFormat = XRenderFindStandardFormat(display, xrenderFormatID);
+ 
+     if (xrenderFormat) {
+         pixmap = gdk_pixmap_new(nsnull, size.width, size.height,

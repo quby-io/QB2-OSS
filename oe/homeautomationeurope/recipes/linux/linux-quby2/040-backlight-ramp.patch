@@ -1,0 +1,239 @@
+--- linux_r03/include/linux/backlight.h	2011-10-05 11:04:35.000000000 +0200
++++ linux_r03/include/linux/backlight.h	2011-10-11 14:33:50.000000000 +0200
+@@ -58,6 +58,9 @@
+ 	int min_brightness;
+ 	/* Maximal value for brightness (read-only) */
+ 	int max_brightness;
++	/* Ramping properties */
++	int ramp_to_brightness;
++	int ramp_step_delay;
+ 	/* Current FB Power mode (0: full on, 1..3: power saving
+ 	   modes; 4: full off), see FB_BLANK_XXX */
+ 	int power;
+@@ -93,6 +96,8 @@
+ 	/* The framebuffer notifier block */
+ 	struct notifier_block fb_notif;
+ 
++	struct timer_list ramp_timer;
++
+ 	struct device dev;
+ };
+ 
+--- linux_r03/drivers/video/backlight/backlight.c	2011-10-05 11:04:49.000000000 +0200
++++ linux_r03/drivers/video/backlight/backlight.c	2011-10-11 11:49:55.000000000 +0200
+@@ -236,6 +236,11 @@
+ 	kfree(bd);
+ }
+ 
++ssize_t backlight_store_ramp_brightness(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t count);
++ssize_t backlight_store_ramp_brightness_sync(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t count);
++		
+ static struct device_attribute bl_device_attributes[] = {
+ 	__ATTR(bl_power, 0644, backlight_show_power, backlight_store_power),
+ 	__ATTR(brightness, 0644, backlight_show_brightness,
+@@ -244,6 +249,8 @@
+ 		     NULL),
+ 	__ATTR(max_brightness, 0444, backlight_show_max_brightness, NULL),
+ 	__ATTR(min_brightness, 0444, backlight_show_min_brightness, NULL),
++	__ATTR(ramp_brightness, 0222, NULL, backlight_store_ramp_brightness),
++	__ATTR(ramp_brightness_sync, 0222, NULL, backlight_store_ramp_brightness_sync),
+ 	__ATTR_NULL,
+ };
+ 
+--- linux_r03/drivers/video/backlight/Makefile	2011-10-11 14:32:09.000000000 +0200
++++ linux_r03/drivers/video/backlight/Makefile	2011-10-11 11:42:25.000000000 +0200
+@@ -13,7 +13,7 @@
+ obj-$(CONFIG_LCD_TOSA)		   += tosa_lcd.o
+ obj-$(CONFIG_LCD_S6E63M0)	+= s6e63m0.o
+ 
+-obj-$(CONFIG_BACKLIGHT_CLASS_DEVICE) += backlight.o
++obj-$(CONFIG_BACKLIGHT_CLASS_DEVICE) += backlight.o backlight_ramp.o
+ obj-$(CONFIG_BACKLIGHT_ATMEL_PWM)    += atmel-pwm-bl.o
+ obj-$(CONFIG_BACKLIGHT_EP93XX)	+= ep93xx_bl.o
+ obj-$(CONFIG_BACKLIGHT_GENERIC)	+= generic_bl.o
+ 
+--- linux_r03/drivers/video/backlight/backlight_ramp.c	2010-05-22 14:51:02.508163677 +0200
++++ linux_r03/drivers/video/backlight/backlight_ramp.c	2011-10-11 14:18:11.000000000 +0200
+@@ -0,0 +1,180 @@
++/*
++ * Backlight Lowlevel Ramping Abstraction
++ *
++ * Copyright (C) 2010,2011 Home Automation Europe
++ *
++ */
++
++#define DEBUG
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/device.h>
++#include <linux/backlight.h>
++#include <linux/notifier.h>
++#include <linux/ctype.h>
++#include <linux/err.h>
++#include <linux/fb.h>
++#include <linux/timer.h>
++#include <linux/delay.h>
++
++#define BL_DEFAULT_RAMP_DELAY			15 /* ms till next step */
++
++static void backlight_ramp_timer_function(unsigned long data)
++{
++	struct backlight_device *bd = (struct backlight_device *) data;
++	int delay = 0;
++
++	del_timer(&bd->ramp_timer);
++
++	// are we done already?
++	if (bd->props.brightness == bd->props.ramp_to_brightness)
++		goto out;
++
++	mutex_lock(&bd->ops_lock);
++	if (bd->ops) {
++		bd->props.brightness += (bd->props.ramp_to_brightness > bd->props.brightness ? 1 : -1);
++		if (bd->props.brightness < 0)
++			bd->props.brightness = 0;
++		else if (bd->props.brightness > bd->props.max_brightness)
++			bd->props.brightness = bd->props.max_brightness;
++		else
++			delay = bd->props.ramp_step_delay;
++
++		dev_dbg(&bd->dev, "ramp brightness from %03d to %03d delay %u [bg-step]\n",
++				bd->props.brightness, bd->props.ramp_to_brightness, bd->props.ramp_step_delay);
++
++		backlight_update_status(bd);
++	}
++	mutex_unlock(&bd->ops_lock);
++
++	// more work to do?
++	if (delay) {
++		mod_timer(&bd->ramp_timer, jiffies + msecs_to_jiffies(delay));
++		return;
++	}
++
++  out:
++	del_timer(&bd->ramp_timer);
++}
++
++static ssize_t backlight_ramp_to_brightness(struct backlight_device *bd,
++		unsigned int brightness, unsigned int delay_ms)
++{
++	int rc = -ENXIO;
++
++	del_timer(&bd->ramp_timer);
++
++	mutex_lock(&bd->ops_lock);
++	if (bd->ops) {
++		if (brightness > bd->props.max_brightness)
++			rc = -EINVAL;
++		else {
++			if (bd->props.brightness != brightness) {
++				dev_dbg(&bd->dev, "ramp brightness from %03d to %03d delay %u [bg]\n",
++						bd->props.brightness, brightness, delay_ms);
++
++				bd->props.ramp_to_brightness = brightness;
++				bd->props.ramp_step_delay = delay_ms;
++				setup_timer(&bd->ramp_timer, backlight_ramp_timer_function,
++						(unsigned long)bd);
++				mod_timer(&bd->ramp_timer, jiffies + 1);
++				rc = 0; // OK
++			}
++		}
++	}
++	mutex_unlock(&bd->ops_lock);
++
++	return rc;
++}
++
++static ssize_t backlight_ramp_to_brightness_sync(struct backlight_device *bd,
++		unsigned int brightness_to, unsigned int delay_ms)
++{
++	int rc = -ENXIO;
++
++	mutex_lock(&bd->ops_lock);
++	if (bd->ops) {
++		if (brightness_to > bd->props.max_brightness)
++			rc = -EINVAL;
++		else {
++			unsigned int brightness_from = bd->props.brightness;
++			int i;
++			int delta = (brightness_from < brightness_to ? 1 : -1);
++			int steps = abs(brightness_from - brightness_to);
++			dev_dbg(&bd->dev, "ramp brightness from %03d to %03d delay %u [sync]\n",
++					brightness_from, brightness_to, delay_ms);
++
++			for (i = 0; i <= steps; ++i)
++			{
++				bd->props.brightness = brightness_from + delta * i;
++
++				backlight_update_status(bd);
++
++				//mutex_unlock(&bd->ops_lock);
++
++				mdelay(delay_ms);
++				//schedule_timeout(delay_me)
++
++				//mutex_lock(&bd->ops_lock);
++			}
++			rc = 0; // OK
++
++			dev_dbg(&bd->dev, "ramp brightness from %03d to %03d delay %u [done]\n",
++					brightness_from, brightness_to, delay_ms);
++		}
++	}
++	mutex_unlock(&bd->ops_lock);
++
++	return rc;
++}
++
++ssize_t backlight_store_ramp_brightness(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t count)
++{
++	int rc = -ENXIO;
++	char *endp;
++	struct backlight_device *bd = to_backlight_device(dev);
++	unsigned int brightness = simple_strtoul(buf, &endp, 0);
++	unsigned int delay = BL_DEFAULT_RAMP_DELAY;
++	size_t size = endp - buf;
++
++	// handle "1:20"
++	if (*endp == ':') {
++		++endp;
++		delay = simple_strtoul(endp, &endp, 0);
++		size = endp - buf;
++	}
++	if (*endp && isspace(*endp))
++		size++;
++	if (size != count)
++		return -EINVAL;
++
++	rc = backlight_ramp_to_brightness(bd, brightness, delay);
++	return (rc ?: count);
++}
++
++ssize_t backlight_store_ramp_brightness_sync(struct device *dev,
++		struct device_attribute *attr, const char *buf, size_t count)
++{
++	int rc = -ENXIO;
++	char *after;
++	struct backlight_device *bd = to_backlight_device(dev);
++	unsigned int brightness = simple_strtoul(buf, &after, 0);
++	unsigned int delay = BL_DEFAULT_RAMP_DELAY;
++	size_t size = after - buf;
++
++	// handle "1:20"
++	if (*after == ':') {
++		++after;
++		delay = simple_strtoul(after, &after, 0);
++		size = after - buf;
++	}
++	if (*after && isspace(*after))
++		size++;
++	if (size != count)
++		return -EINVAL;
++
++	rc = backlight_ramp_to_brightness_sync(bd, brightness, delay);
++	return (rc ?: count);
++}

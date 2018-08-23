@@ -1,0 +1,7 @@
+# /etc/fstab: static file system information.
+# <file system>      <mount pt>           <type>     <options>           <dump> <pass>
+rootfs               /                    auto       defaults,noatime,nodiratime 1  1
+proc                 /proc                proc       defaults,noatime      0  0
+devpts               /dev/pts             devpts     mode=0620,gid=5,noatime 0  0
+usbfs                /proc/bus/usb        usbfs      defaults,noatime      0  0
+tmpfs                /var/volatile        tmpfs      defaults,noatime      0  0

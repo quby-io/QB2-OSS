@@ -1,0 +1,59 @@
+Index: Makefile
+===================================================================
+--- Makefile.orig	2010-11-03 13:37:30.000000000 +0300
++++ Makefile	2010-11-03 13:39:18.000000000 +0300
+@@ -8,7 +8,7 @@
+ #
+ # Installation directory
+ #
+-INSTDIR   = ${DESTDIR}/usr/local
++INSTDIR   = ${DESTDIR}/usr
+ 
+ #
+ # Search directories
+@@ -32,6 +32,8 @@
+ #
+ # CROSS_COMPILE=arm-mv5sft-linux-gnueabi-
+ #
++AR        = ar
++RANLIB    = ranlib
+ CC        = ${CROSS_COMPILE}gcc
+ CFLAGS    = -g  -Wall -fPIC ${INCLUDE} ${DNA_DEFINE}
+ LDFLAGS   = -g -shared
+@@ -47,26 +49,29 @@
+ # Main targets
+ #
+ STATICLIB  = libpfring.a
+-DYNAMICLIB = libpfring.so
++DYNAMICLIB = libpfring.so.0.0.1
+ TARGETS    = ${STATICLIB} ${DYNAMICLIB}
+ RING_H     = ../../kernel/linux/pf_ring.h
+ 
+ all: ${TARGETS}
+ 
+-${STATICLIB}: Makefile ${OBJS} pfring.h ${RING_H}
++${STATICLIB}: Makefile ${OBJS} pfring.h
+ 	@echo "=*= making library $@ =*="
+-	ar rs $@ ${OBJS}
+-	ranlib $@
++	${AR} rs $@ ${OBJS}
++	${RANLIB} $@
+ 
+-${DYNAMICLIB}: ${OBJS} pfring.h ${RING_H} Makefile
++${DYNAMICLIB}: ${OBJS} pfring.h Makefile
+ 	@echo "=*= making library $@ =*="
+-	${CC} ${LDFLAGS} ${OBJS} ${SYSLIBS} -o $@
++	${CC} ${LDFLAGS} ${OBJS} ${SYSLIBS} -Wl,-soname,libpfring.so.0 -o $@
+ 
+ install: ${STATICLIB} ${DYNAMICLIB}
++	install -d ${INSTDIR}/lib
++	install -d ${INSTDIR}/include
+ 	cp ${STATICLIB} ${INSTDIR}/lib/
+ 	cp ${DYNAMICLIB} ${INSTDIR}/lib/
++	ln -sf ${DYNAMICLIB} ${INSTDIR}/lib/libpfring.so.0
++	ln -sf ${DYNAMICLIB} ${INSTDIR}/lib/libpfring.so
+ 	cp pfring_e1000e_dna.h pfring.h ${INSTDIR}/include/
+-	ldconfig
+ 
+ clean:
+ 	@rm -f ${TARGETS} *.o *~

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+. /etc/init.d/functions.hae
+
+print_boot_heading "Please wait: booting..."
+
+# show basic version/commonname info
+FIRMWARE="`opkg status base-*-* | egrep '^(Version|Package):' | cut -d' ' -f2 | xargs | sed -r -e 's,base-(.+?)-(.+?) ,\1/\2/,'`"
+print_boot_key_val "Kernel"   "`uname -r`"
+print_boot_key_val "Firmware" "$FIRMWARE"
+print_boot_key_val "Hostname" "`cat /etc/hostname`"
+
+# show any error msgs?
+DMESG="`dmesg`"
+echo "$DMESG" | grep -q TSC2007 || print_boot_key_val "Touchscreen Error" "Please power off/on to correct the problem!"
+
+# do this timely, so PHY has time to be UP
+ifconfig eth0 up promisc
